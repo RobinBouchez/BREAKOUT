@@ -5,6 +5,7 @@
 .DS_Store
 
 test.rtf
+<<<<<<< HEAD
 =======
 *.EXE
 *.OBJ
@@ -15,3 +16,5 @@ test.rtf
 .OBJ
 .DS_Store
 >>>>>>> e905350 (update)
+=======
+>>>>>>> 8282753 (update)
