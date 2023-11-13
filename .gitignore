@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 .EXE
 .OBJ
 .DS_Store
 
 test.rtf
+=======
+*.EXE
+*.OBJ
+.DS_Store
+>>>>>>> 7eba07f (gitignore)
