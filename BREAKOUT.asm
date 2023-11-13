@@ -24,38 +24,37 @@ PROC drawRectangle
     ARG     @@x0:word, @@y0:word, @@w:word, @@h:word, @@col: byte
     USES     eax, ecx, edx, edi
 
-    movzx eax, [@@y0]
-    mov edx, SCREEN_WIDTH
-    mul edx
-    add ax, [@@x0]
+	; Compute the index of the rectangle's top left corner
+	movzx eax, [@@y0]
+	mov edx, SCREEN_WIDTH
+	mul edx
+	add	ax, [@@x0]
 
-    ; Compute top left corner address
-    mov edi, VMEMADR
-    add edi, eax
-    
-    ; Plot the top horizontal edge.
-    movzx edx, [@@w]   ; store width in edx for later reuse
-    mov    ecx, edx
-    mov    al,[@@col]
-    rep stosb
-    sub edi, edx        ; reset edi to left-top corner
-    
-    ; plot both vertical edges
-    movzx ecx,[@@h]
-    @@vertLoop:
-        mov    [edi],al        ; left edge
-        mov    [edi+edx-1],al    ; right edge
-        add    edi, SCREEN_WIDTH
-        loop @@vertLoop
-        
-    ; edi should point at the bottom-left corner now
-    sub edi, SCREEN_WIDTH
+	; Compute top left corner address
+	mov edi, VMEMADR
+	add edi, eax
+	
+	; Plot the top horizontal edge.
+	movzx edx, [@@w]	; store width in edx for later reuse
+	mov	ecx, edx
+	mov	al,[@@col]
+	rep stosb
+	sub edi, edx		; reset edi to left-top corner
+	
+	; plot both vertical edges
+	movzx ecx,[@@h]
+	@@vertLoop:
+		mov	[edi],al		; left edge
+		mov	[edi+edx-1],al	; right edge
+		add	edi, SCREEN_WIDTH
+		loop @@vertLoop
+	; edi should point at the bottom-left corner now
+	sub edi, SCREEN_WIDTH
 
-    ; Plot the bottom horizontal edge.
-    mov    ecx, edx
-    rep stosb
-    
-    ret
+	; Plot the bottom horizontal edge.
+	mov	ecx, edx
+	rep stosb
+	ret
 ENDP drawRectangle
 
 ; Terminate the program.
