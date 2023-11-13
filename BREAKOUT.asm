@@ -24,12 +24,10 @@ PROC drawRectangle
     ARG     @@x0:word, @@y0:word, @@w:word, @@h:word, @@col: byte
     USES     eax, ecx, edx, edi
 
-	; Compute the index of the rectangle's top left corner
-	movzx eax, [@@y0]
-	mov edx, SCREEN_WIDTH
-	mul edx
-	add	ax, [@@x0]
-
+    movzx eax, [@@y0]
+    mov edx, SCREEN_WIDTH
+    mul edx
+    add ax, [@@x0]
 
 	; Compute top left corner address
 	mov edi, VMEMADR
