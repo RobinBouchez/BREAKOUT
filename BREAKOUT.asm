@@ -29,6 +29,7 @@ PROC drawRectangle
     mul edx
     add ax, [@@x0]
 
+
 	; Compute top left corner address
 	mov edi, VMEMADR
 	add edi, eax
