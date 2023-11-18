@@ -43,8 +43,6 @@ PROC processUserInput
 	sub ax, bx	; if key is pressed, AX = FFFF, otherwise AX = 0000
 	loop @@loopkeys
 
-    
-
     ret
 ENDP processUserInput
 
@@ -88,19 +86,27 @@ ENDP drawRectangle
 
 PROC drawWorld
     mov ecx, 14
-    mov edx, 20 
+    mov edx, 20
 
-@@drawWall:
-    call drawRectangle, edx,10,BRICK_WIDTH, BRICK_HEIGHT, 4
-    call drawRectangle, edx,20,BRICK_WIDTH, BRICK_HEIGHT, 4
-    call drawRectangle, edx,30,BRICK_WIDTH, BRICK_HEIGHT, 32
-    call drawRectangle, edx,40,BRICK_WIDTH, BRICK_HEIGHT, 32
-    call drawRectangle, edx,50,BRICK_WIDTH, BRICK_HEIGHT, 2
-    call drawRectangle, edx,60,BRICK_WIDTH, BRICK_HEIGHT, 2
-    call drawRectangle, edx,70,BRICK_WIDTH, BRICK_HEIGHT, 14
-   ; call drawRectangle, edx,80,BRICK_WIDTH, BRICK_HEIGHT, 14
-    add edx, 18
-    loop @@drawWall
+@@outer:
+    ;mov ebx, 14
+    @@inner:
+        call drawRectangle, edx, [brick_y],BRICK_WIDTH, BRICK_HEIGHT, 2
+        call drawRectangle, edx, [brick_y],BRICK_WIDTH, BRICK_HEIGHT, 2
+        ;call drawRectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 4
+        ;call drawRectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 4
+
+        ;call drawRectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 32
+        ;call drawRectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 32
+    
+        ;call drawRectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 14
+        ;call drawRectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 14
+        add edx, 18
+        ;dec ebx
+        ;jnz @@inner
+
+    ;add [brick_y], 10
+    loop @@outer
 
 
     call drawRectangle, [controller_x], [controller_y], 34, 3, 9  ;pallette 9
@@ -162,6 +168,8 @@ DATASEG
 
     controller_x dd 140
     controller_y dd 180
+    
+    brick_y dd 10
     
     _plus dw 8, 8 ; W = 8, h = 8
     db 0, 0, 0, 1, 1, 0, 0, 0
