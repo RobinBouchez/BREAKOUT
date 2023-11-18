@@ -1,4 +1,4 @@
-.EXE
-.OBJ
-.DS_Store
+*.EXE
+*.OBJ
+*.DS_Store
 test.rtf

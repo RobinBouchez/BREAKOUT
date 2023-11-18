@@ -3,17 +3,18 @@
 # =============================================================================
 
 # Settings - Edit the names of the object and executable files.
-objects1 = BREAKOUT.obj
+objs = keyb.obj BREAKOUT.obj
 dest = BREAKOUT.exe
+#/Users/robinbouchez/ASM/c_disk/BREAKOUT/MAKEFILE
 
 # =============================================================================
 # Do NOT edit this section, unless you know what you are doing.
 # =============================================================================
 .asm.obj
-  # use TASM with debug info (stripped anyway by wlink if not used)
-  tasm /ml /m2 /w2 /z /zi $<
+  tasm /ml /m2 /w2 /z /zi /p /jIDEAL $<
 
-$(dest): $(objects1)
+$(dest): $(objs)
+#  wlink option quiet system pmodew name $@ file {$(objs)}
   wlink option quiet system pmodew name $@ file *.obj
 
 clean: .symbolic
@@ -21,6 +22,6 @@ clean: .symbolic
   del $(dest)
 
 .silent
-debug: $(objects1) .symbolic
-  wlink debug watcom all option quiet system pmodew name $(dest) file *.obj
+debug: $(objs) .symbolic
+  wlink debug watcom lines option Q,C system pmodew name $(dest) file *.obj
   wd /tr=rsi /li=43 $(dest)
