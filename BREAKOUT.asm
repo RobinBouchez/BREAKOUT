@@ -120,25 +120,24 @@ PROC draw_world
     USES ecx, ebx, edx
     mov ecx, 14
     mov edx, 20
+    ;mov ebx, 14
 
 @@outer:
-    ;mov ebx, 14
-    @@inner:
-        call draw_rectangle, edx, [brick_y],BRICK_WIDTH, BRICK_HEIGHT, 2
-        call draw_rectangle, edx, [brick_y],BRICK_WIDTH, BRICK_HEIGHT, 2
-        ;call draw_rectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 4
-        ;call draw_rectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 4
+   ; @@inner:
+        call draw_rectangle, edx,[brick_y], BRICK_WIDTH, BRICK_HEIGHT, 2
+        call draw_rectangle, edx,20, BRICK_WIDTH, BRICK_HEIGHT, 2
+        call draw_rectangle, edx,30,BRICK_WIDTH, BRICK_HEIGHT, 4
+        call draw_rectangle, edx,40,BRICK_WIDTH, BRICK_HEIGHT, 4
+        call draw_rectangle, edx,50,BRICK_WIDTH, BRICK_HEIGHT, 32
+        call draw_rectangle, edx,60,BRICK_WIDTH, BRICK_HEIGHT, 32
 
-        ;call draw_rectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 32
-        ;call draw_rectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 32
-    
-        ;call draw_rectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 14
+        call draw_rectangle, edx,70,BRICK_WIDTH, BRICK_HEIGHT, 14
         ;call draw_rectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 14
         add edx, 18
-        ;dec ebx
-        ;jnz @@inner
+;        dec ebx
+ ;       jnz @@inner
 
-    ;add [brick_y], 10
+;    add [brick_y], 10
     loop @@outer
 
     call draw_controller
@@ -193,7 +192,7 @@ PROC main
     call __keyb_installKeyboardHandler		
 
 @@main_loop:
-    call clearScreenBuffer
+    ;call clearScreenBuffer
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
 	cmp     al, 01h
