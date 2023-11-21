@@ -67,11 +67,14 @@ PROC draw_rectangle
 ENDP draw_rectangle
 
 PROC draw_controller
-    call draw_rectangle, [controller_x], [controller_y], CONTROLLER_WIDTH, CONTROLLER_HEIGHT, CONTROLLER_COLOR
+    ARG @@x0, @@y0
+
+    call draw_rectangle, [@@x0], [@@y0], CONTROLLER_WIDTH, CONTROLLER_HEIGHT, CONTROLLER_COLOR
     ret
 ENDP draw_controller
 
 PROC move_controller
+    ARG @@x0
 
     push edx
 
@@ -79,11 +82,10 @@ PROC move_controller
 	cmp     al, 1eh ; is a key pressed?
     jne @@return
     @@move_controller_right:
-    mov edx, [controller_x] 
+    mov edx, [@@x0]
     add edx, 1
-    mov [controller_x], edx
+    mov [@@x0], edx
     
-
     @@return:
     pop edx
 
@@ -111,7 +113,7 @@ PROC process_user_input
 	xor ax, ax
 	sub ax, bx	; if key is pressed, AX = FFFF, otherwise AX = 0000
 	loop @@loopkeys
-    call move_controller
+    call move_controller, [controller_x]
 
     ret
 ENDP process_user_input
@@ -136,11 +138,10 @@ PROC draw_world
         add edx, 18
 ;        dec ebx
  ;       jnz @@inner
-
 ;    add [brick_y], 10
     loop @@outer
 
-    call draw_controller
+    call draw_controller,[controller_x], [controller_y]
     call draw_rectangle, SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50, 4, 2, 0fh  ;    ball
     
 	ret
