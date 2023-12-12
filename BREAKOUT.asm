@@ -92,6 +92,71 @@ PROC move_controller
     ret
 ENDP move_controller
 
+PROC balraakt
+	ARG @@balx:dword, @@baly:dword RETURNS eax
+    uses eax, ebx, edx
+	
+	;call printUnsignedInteger, [@@balx]
+	;call printnewline
+	mov eax, [@@balx]
+	call printUnsignedInteger, eax
+	call printnewline
+	mov ebx, 364
+	cmp ebx, eax
+	ja @@eaxnull
+	
+	@@bereken_x:
+	;call printUnsignedInteger, [@@balx]
+	;call printnewline
+	mov eax, [@@balx]
+	mov ebx, [BRICK_WIDTH]
+	div ebx
+	cmp ah, 0
+	je @@x_gevonden
+	sub [@@balx], 1
+	jmp @@bereken_x
+	
+	@@x_gevonden:
+	;call printUnsignedInteger, [@@balx]
+	;call printnewline
+	;call printUnsignedInteger, [@@baly]
+	;call printnewline
+	mov eax, [@@baly]
+	mov ebx, 64
+	cmp eax, ebx
+	ja @@eaxnull
+	
+	mov eax, [ball_y]
+	@@bereken_y:
+	;call printUnsignedInteger, [@@baly]
+	;call printnewline
+	mov eax, [@@baly]
+	mov ebx, [BRICK_HEIGHT]
+	xor edx, edx
+	div ebx
+	mov ebx, 0
+	cmp ebx, edx
+	je @@y_gevonden
+	sub [@@baly], 1
+	jmp @@bereken_y
+	
+	@@eaxnull:
+	;call printUnsignedInteger, 999
+	;call printnewline
+	mov eax, 0
+	ret
+	
+	@@y_gevonden:
+	;call printUnsignedInteger, 445
+	;call printnewline
+	;call printUnsignedInteger, [@@baly]
+	;call printnewline
+	mov eax, 1
+	
+	@@stop:
+	ret
+ENDP balraakt
+
 ; Set the video mode
 PROC set_video_mode
     ARG     @@VM:byte
@@ -165,7 +230,7 @@ PROC clearScreenBuffer
 	mov		ecx, 64000 / 2
 	xor		eax, eax
 	rep		stosw
-	
+    
 	pop		es
 	pop		edi
 	pop		ecx
