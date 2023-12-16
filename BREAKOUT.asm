@@ -250,7 +250,7 @@ PROC main
     ;call clearScreenBuffer
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
-	cmp     al, 29h
+	cmp     al, 01h
     je @@end_of_loop
     call update_world
     call draw_world
