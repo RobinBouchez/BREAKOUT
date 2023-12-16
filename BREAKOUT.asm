@@ -167,7 +167,7 @@ PROC process_user_input
 	xor ax, ax
 	sub ax, bx	; if key is pressed, AX = FFFF, otherwise AX = 0000
 	loop @@loopkeys
-    call move_controller, [controller_x]
+    ;call move_controller, [controller_x]
 
     ret
 ENDP process_user_input
@@ -201,8 +201,65 @@ PROC draw_world
 	ret
 ENDP draw_world
 
+PROC printUnsignedInteger
+	ARG	@@printval:dword    ; input argument
+	USES eax, ebx, ecx, edx
+
+	mov eax, [@@printval]
+	mov	ebx, 10		; divider
+	xor ecx, ecx	; counter for digits to be printed
+
+	; Store digits on stack
+@@getNextDigit:
+	inc	ecx         ; increase digit counter
+	xor edx, edx
+	div	ebx   		; divide by 10
+	push dx			; store remainder on stack
+	test eax, eax	; check whether zero?
+	jnz	@@getNextDigit
+
+    ; Write all digits to the standard output
+	mov	ah, 2h 		; Function for printing single characters.
+@@printDigits:		
+	pop dx
+	add	dl,'0'      	; Add 30h => code for a digit in the ASCII table, ...
+	int	21h            	; Print the digit to the screen, ...
+	loop @@printDigits	; Until digit counter = 0.
+	
+	ret
+ENDP printUnsignedInteger
+
+PROC printnewline
+	USES eax, edx
+	MOV dl, 10
+	MOV ah, 02h
+	INT 21h
+	ret
+ENDP printnewline	
+
 PROC update_world
+	ARG @@key:dword
 	USES eax
+
+	cmp [@@key], 4Bh
+	je @@move_cont_left
+	cmp [@@key], 4Dh
+	je @@move_cont_right
+	jmp @@beweeg_bal
+	
+	@@move_cont_left:
+	call printUnsignedInteger, 9
+	call printnewline
+	sub [controller_x], 5
+	jmp @@beweeg_bal
+	
+	@@move_cont_right:
+	call printUnsignedInteger, 6
+	call printnewline
+	add [controller_x], 5
+
+
+	@@beweeg_bal:
 	cmp [bal_beweeg_var], 0
 	je @@null
 
@@ -223,6 +280,11 @@ PROC update_world
 	mov [ball_y], eax
 
 	@@stop:
+	call balraakt, offset block_length
+	cmp eax, 1
+	je @@return
+	mov [bal_beweeg_var], 0
+	@@return:
     ret
 ENDP update_world
 
@@ -271,9 +333,12 @@ PROC main
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
 	cmp     al, 01h
-    je @@end_of_loop
-    call update_world
-    call draw_world
+	je @@end_of_loop
+	;call printUnsignedInteger, eax
+	;call printnewline
+    call update_world, eax
+    ;call draw_world
+	xor eax, eax
     jmp @@main_loop
     @@end_of_loop:
 
