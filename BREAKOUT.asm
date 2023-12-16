@@ -92,69 +92,58 @@ PROC move_controller
     ret
 ENDP move_controller
 
+
 PROC balraakt
-	ARG @@balx:dword, @@baly:dword RETURNS eax
-    uses eax, ebx, edx
+	ARG @@arrayptr:dword 
+    uses ebx, ecx
 	
-	;call printUnsignedInteger, [@@balx]
-	;call printnewline
-	mov eax, [@@balx]
-	call printUnsignedInteger, eax
-	call printnewline
-	mov ebx, 364
-	cmp ebx, eax
-	ja @@eaxnull
+	mov ebx, [@@arrayptr]	; store pointer in ebx
+	mov ecx, [ebx]			; get length counter in ecx
 	
-	@@bereken_x:
-	;call printUnsignedInteger, [@@balx]
-	;call printnewline
-	mov eax, [@@balx]
-	mov ebx, [BRICK_WIDTH]
-	div ebx
-	cmp ah, 0
-	je @@x_gevonden
-	sub [@@balx], 1
-	jmp @@bereken_x
+	@@zoek_x:
+	add ebx, 4
+
+	mov edx, [dword ptr ebx]
+	cmp [ball_x], edx
+	jle @@x_gevonden
+	loop @@zoek_x
+	jmp @@niet_gevonden
+	
 	
 	@@x_gevonden:
-	;call printUnsignedInteger, [@@balx]
-	;call printnewline
-	;call printUnsignedInteger, [@@baly]
-	;call printnewline
-	mov eax, [@@baly]
-	mov ebx, 64
-	cmp eax, ebx
-	ja @@eaxnull
+	sub ebx, 4
+	mov eax, [dword ptr ebx]
+	push eax
+	mov [ebx], 1
 	
-	mov eax, [ball_y]
-	@@bereken_y:
-	;call printUnsignedInteger, [@@baly]
-	;call printnewline
-	mov eax, [@@baly]
-	mov ebx, [BRICK_HEIGHT]
-	xor edx, edx
-	div ebx
-	mov ebx, 0
-	cmp ebx, edx
-	je @@y_gevonden
-	sub [@@baly], 1
-	jmp @@bereken_y
+	mov ebx, [@@arrayptr]	; store pointer in ebx
+	mov ecx, [ebx]			; get length counter in ecx
 	
-	@@eaxnull:
-	;call printUnsignedInteger, 999
-	;call printnewline
-	mov eax, 0
-	ret
+	add ebx, 32
+	
+	@@zoek_y:
+	add ebx, 4
+	
+	
+	mov edx, [dword ptr ebx]
+	cmp [ball_y], edx
+	jle @@y_gevonden
+	loop @@zoek_y
+	
+	@@niet_gevonden:
+	mov eax, 1
+	push eax
+	jmp @@stop
 	
 	@@y_gevonden:
-	;call printUnsignedInteger, 445
-	;call printnewline
-	;call printUnsignedInteger, [@@baly]
-	;call printnewline
-	mov eax, 1
+	sub ebx, 4
+	mov edx, [dword ptr ebx]
+	mov [ebx], 1
 	
+
 	@@stop:
-	ret
+	pop eax
+	ret 
 ENDP balraakt
 
 ; Set the video mode
@@ -289,6 +278,11 @@ DATASEG
     ball_y dd 100
     ball_width dd 100
     ball_height dd 100
+	
+	block_length dd 8
+	block_x dd 0, 16, 32, 48, 64, 80, 96, 112
+    block_y dd 0, 8, 16, 24, 32, 40, 48, 56
+    
 
     controller_x dd 140
     controller_y dd 180
