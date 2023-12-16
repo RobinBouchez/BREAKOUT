@@ -196,13 +196,33 @@ PROC draw_world
     loop @@outer
 
     call draw_controller,[controller_x], [controller_y]
-    call draw_rectangle, SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50, 4, 2, 0fh  ;    ball
+    call draw_rectangle, [ball_x], [ball_y], 4, 2, 0fh  ;    ball
     
 	ret
 ENDP draw_world
 
 PROC update_world
+	USES eax
+	cmp [bal_beweeg_var], 0
+	je @@null
 
+	mov eax, [ball_x]
+	sub eax, 1
+	mov [ball_x], eax
+	mov eax, [ball_y]
+	sub eax, 1
+	mov [ball_y], eax
+	jmp @@stop
+	
+	@@null:
+	mov eax, [ball_x]
+	add eax, 1
+	mov [ball_x], eax
+	mov eax, [ball_y]
+	add eax, 1
+	mov [ball_y], eax
+
+	@@stop:
     ret
 ENDP update_world
 
@@ -247,7 +267,7 @@ PROC main
     call __keyb_installKeyboardHandler		
 
 @@main_loop:
-    ;call clearScreenBuffer
+    call clearScreenBuffer
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
 	cmp     al, 01h
@@ -274,8 +294,8 @@ DATASEG
     _screenBuffer db 64000 dup(?)
     _paletteArray db 0, 0, 0, 60, 0, 0, 60, 30, 0, 60, 60, 0, 0, 60, 0, 0, 0, 60, 63, 63, 63
     
-    ball_x dd 100
-    ball_y dd 100
+    ball_x dd 200
+    ball_y dd 200
     ball_width dd 100
     ball_height dd 100
 	
@@ -283,6 +303,7 @@ DATASEG
 	block_x dd 0, 16, 32, 48, 64, 80, 96, 112
     block_y dd 0, 8, 16, 24, 32, 40, 48, 56
     
+	bal_beweeg_var dd 1
 
     controller_x dd 140
     controller_y dd 180
