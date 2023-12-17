@@ -237,33 +237,42 @@ PROC printUnsignedInteger
 	ret
 ENDP printUnsignedInteger
 
+PROC delay
+	USES eax, ecx, edx
+	mov     CX, 01h
+	mov    DX, 100Fh
+	mov    AH, 86h
+	int    15h
+	ret
+ENDP delay
 
 
 PROC update_world
-	ARG @@key:dword
-	USES eax, ebx
+	;ARG @@key:dword
+	USES ebx
+	
+	cmp ax, 0
+	je @@beweeg_bal
 
-	cmp [@@key], 4bh
+	cmp eax, 4bh
 	je @@move_cont_left
-	cmp bl, 4dh
+	cmp eax, 4dh
 	je @@move_cont_right
-	jmp @@stop
+	jmp @@beweeg_bal
 	
 	@@move_cont_left:
-	cmp [@@key], 0
-	je @@stop
 	mov eax, [controller_x]
-	cmp eax, 0
-	je @@stop
 	sub eax, 5
+	cmp eax, 0
+	je @@beweeg_bal
 	mov [controller_x], eax
-	jmp @@stop
+	jmp @@beweeg_bal
 	
 	@@move_cont_right:
-	cmp [@@key], 0
-	je @@stop
 	mov eax, [controller_x]
 	add eax, 5
+	cmp eax, 290
+	je @@beweeg_bal
 	mov [controller_x], eax
 	
 
@@ -343,8 +352,9 @@ PROC main
 	cmp     al, 01h
 	je @@end_of_loop
     call update_world, eax
-    ;call draw_world
-	call printUnsignedInteger, [controller_x]
+    call draw_world
+	;call printUnsignedInteger, [controller_x]
+	call delay
 	xor eax, eax
     jmp @@main_loop
     @@end_of_loop:
