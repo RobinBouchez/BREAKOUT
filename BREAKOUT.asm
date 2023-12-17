@@ -167,10 +167,7 @@ PROC process_user_input
 	xor ax, ax
 	sub ax, bx	; if key is pressed, AX = FFFF, otherwise AX = 0000
 	loop @@loopkeys
-	cmp ax, 0
-	je @@stop
-	call printUnsignedInteger, ebx
-	@@stop:
+	
     ret
 ENDP process_user_input
 
@@ -203,6 +200,14 @@ PROC draw_world
 	ret
 ENDP draw_world
 
+PROC printnewline
+	USES eax, edx
+	MOV dl, 10
+	MOV ah, 02h
+	INT 21h
+	ret
+ENDP printnewline	
+
 PROC printUnsignedInteger
 	ARG	@@printval:dword    ; input argument
 	USES eax, ebx, ecx, edx
@@ -228,23 +233,19 @@ PROC printUnsignedInteger
 	int	21h            	; Print the digit to the screen, ...
 	loop @@printDigits	; Until digit counter = 0.
 	
+	call printnewline
 	ret
 ENDP printUnsignedInteger
 
-PROC printnewline
-	USES eax, edx
-	MOV dl, 10
-	MOV ah, 02h
-	INT 21h
-	ret
-ENDP printnewline	
+
 
 PROC update_world
 	ARG @@key:dword
 	USES eax, ebx
-	cmp [@@key], 4Bh
+
+	cmp [@@key], 4bh
 	je @@move_cont_left
-	cmp bl, 4Dh
+	cmp bl, 4dh
 	je @@move_cont_right
 	jmp @@stop
 	
@@ -343,6 +344,7 @@ PROC main
 	je @@end_of_loop
     call update_world, eax
     ;call draw_world
+	call printUnsignedInteger, [controller_x]
 	xor eax, eax
     jmp @@main_loop
     @@end_of_loop:
