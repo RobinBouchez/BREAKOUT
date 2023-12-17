@@ -158,7 +158,7 @@ PROC set_video_mode
 ENDP set_video_mode
 
 PROC process_user_input
-    USES eax, ebx, ecx	
+    USES ebx, ecx	
     mov ecx, KEYCNT
 
     @@loopkeys:
@@ -167,8 +167,10 @@ PROC process_user_input
 	xor ax, ax
 	sub ax, bx	; if key is pressed, AX = FFFF, otherwise AX = 0000
 	loop @@loopkeys
-    ;call move_controller, [controller_x]
-
+	cmp ax, 0
+	je @@stop
+	call printUnsignedInteger, ebx
+	@@stop:
     ret
 ENDP process_user_input
 
@@ -239,25 +241,30 @@ ENDP printnewline
 
 PROC update_world
 	ARG @@key:dword
-	USES eax
-
+	USES eax, ebx
 	cmp [@@key], 4Bh
 	je @@move_cont_left
-	cmp [@@key], 4Dh
+	cmp bl, 4Dh
 	je @@move_cont_right
-	jmp @@beweeg_bal
+	jmp @@stop
 	
 	@@move_cont_left:
-	call printUnsignedInteger, 9
-	call printnewline
-	sub [controller_x], 5
-	jmp @@beweeg_bal
+	cmp [@@key], 0
+	je @@stop
+	mov eax, [controller_x]
+	cmp eax, 0
+	je @@stop
+	sub eax, 5
+	mov [controller_x], eax
+	jmp @@stop
 	
 	@@move_cont_right:
-	call printUnsignedInteger, 6
-	call printnewline
-	add [controller_x], 5
-
+	cmp [@@key], 0
+	je @@stop
+	mov eax, [controller_x]
+	add eax, 5
+	mov [controller_x], eax
+	
 
 	@@beweeg_bal:
 	cmp [bal_beweeg_var], 0
@@ -334,8 +341,6 @@ PROC main
     mov     al, [__keyb_rawScanCode]; last pressed key
 	cmp     al, 01h
 	je @@end_of_loop
-	;call printUnsignedInteger, eax
-	;call printnewline
     call update_world, eax
     ;call draw_world
 	xor eax, eax
