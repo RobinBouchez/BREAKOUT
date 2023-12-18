@@ -195,7 +195,7 @@ PROC draw_world
     loop @@outer
 
     call draw_controller,[controller_x], [controller_y]
-    call draw_rectangle, [ball_x], [ball_y], 4, 2, 0fh  ;    ball
+    call draw_rectangle, [ball_x], [ball_y], BALL_SIZE, BALL_SIZE, 0fh  ;    ball
     
 	ret
 ENDP draw_world
@@ -281,19 +281,19 @@ PROC update_world
 	je @@null
 
 	mov eax, [ball_x]
-	sub eax, 1
+	sub eax, [bal_speed]
 	mov [ball_x], eax
 	mov eax, [ball_y]
-	sub eax, 1
+	sub eax, [bal_speed]
 	mov [ball_y], eax
 	jmp @@stop
 	
 	@@null:
 	mov eax, [ball_x]
-	add eax, 1
+	add eax, [bal_speed]
 	mov [ball_x], eax
 	mov eax, [ball_y]
-	add eax, 1
+	add eax, [bal_speed]
 	mov [ball_y], eax
 
 	@@stop:
@@ -376,8 +376,8 @@ DATASEG
     _screenBuffer db 64000 dup(?)
     _paletteArray db 0, 0, 0, 60, 0, 0, 60, 30, 0, 60, 60, 0, 0, 60, 0, 0, 0, 60, 63, 63, 63
     
-    ball_x dd 200
-    ball_y dd 200
+    ball_x dd 155
+    ball_y dd 180
     ball_width dd 100
     ball_height dd 100
 	
@@ -386,6 +386,7 @@ DATASEG
     block_y dd 0, 8, 16, 24, 32, 40, 48, 56
     
 	bal_beweeg_var dd 1
+	bal_speed dd 2
 
     controller_x dd 140
     controller_y dd 180
