@@ -146,6 +146,33 @@ PROC balraakt
     ret
 ENDP balraakt
 
+PROC balraaktcontroller
+	USES eax, ebx, ecx, edx
+	
+	mov eax, [controller_y]
+	cmp [ball_y], eax
+	jne @@stop
+	mov eax, [controller_x]
+	mov ecx, CONTROLLER_WIDTH
+	@@loop:
+	cmp eax, [controller_x]
+	je @@gelijk
+	sub eax, 1
+	loop @@loop
+	jmp @@stop
+	@@gelijk:
+	cmp [bal_beweeg_var], 0
+	je @@null
+	mov [bal_beweeg_var], 0
+	jmp @@stop
+	@@null:
+	mov [bal_beweeg_var], 1
+	
+
+	@@stop:
+	ret
+ENDP balraaktcontroller
+
 ; Set the video mode
 PROC set_video_mode
     ARG     @@VM:byte
@@ -239,8 +266,8 @@ ENDP printUnsignedInteger
 
 PROC delay
     USES eax, ecx, edx
-    mov     CX, 01h
-    mov    DX, 100Fh
+    mov     CX, 00h
+    mov    DX, 1FFFh
     mov    AH, 86h
     int    15h
     ret
@@ -297,9 +324,11 @@ PROC update_world
     mov [ball_y], eax
 
     @@stop:
+	call balraaktcontroller
     call balraakt, offset block_length
     cmp eax, 1
     je @@return
+	
     mov [bal_beweeg_var], 0
     @@return:
     ret
@@ -425,9 +454,8 @@ PROC main
     cmp     al, 01h
     je @@end_of_loop
     call DrawBG, offset dataread_bg
-    call update_world, eax
+    call update_world 
     call draw_world
-    ;call printUnsignedInteger, [controller_x]
     call delay
     xor eax, eax
     call wait_VBLANK, 3
@@ -461,7 +489,7 @@ DATASEG
     block_y dd 0, 8, 16, 24, 32, 40, 48, 56
     
     bal_beweeg_var dd 1
-    bal_speed dd 2
+    bal_speed dd 1
 
     controller_x dd 140
     controller_y dd 180
