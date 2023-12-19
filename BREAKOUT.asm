@@ -236,31 +236,60 @@ PROC process_user_input
     ret
 ENDP process_user_input
 
+
+PROC drawSprite
+    ARG @@spritePtr: dword, \
+        @@dstPtr: dword, \
+        @@x: dword, \
+        @@y: dword
+    LOCAL @@w: dword, @@h: dword
+    USES eax, ebx, ecx, edx, esi , edi
+
+    mov esi , [@@spritePtr]
+    xor eax, eax
+    lodsw ; read width in AX
+    mov [@@w], eax
+    lodsw ; read height in AX
+    mov [@@h], eax
+
+    mov edi, [@@dstPtr]
+    mov eax, [@@y]
+    mov ebx, SCREEN_WIDTH
+    mul ebx
+    add edi, eax
+    add edi, [@@x]  
+    mov ecx, [@@h]
+
+@@drawLine :
+    push ecx
+    mov ecx, [@@w]
+    rep movsb
+
+    add edi , SCREEN_WIDTH
+    sub edi, [@@w] ; edi now points to the next line in dst
+
+    pop ecx
+    dec ecx
+    jnz @@drawLine
+    ret
+ENDP drawSprite
+
 PROC draw_world
     USES ecx, ebx, edx
     mov ecx, 14
     mov edx, 20
-    ;mov ebx, 14
 
 @@outer:
-   ; @@inner:
-        call draw_rectangle, edx,[brick_y], BRICK_WIDTH, BRICK_HEIGHT, 2
-        call draw_rectangle, edx,20, BRICK_WIDTH, BRICK_HEIGHT, 2
-        call draw_rectangle, edx,30,BRICK_WIDTH, BRICK_HEIGHT, 4
-        call draw_rectangle, edx,40,BRICK_WIDTH, BRICK_HEIGHT, 4
-        call draw_rectangle, edx,50,BRICK_WIDTH, BRICK_HEIGHT, 32
-        call draw_rectangle, edx,60,BRICK_WIDTH, BRICK_HEIGHT, 32
-
-        call draw_rectangle, edx,70,BRICK_WIDTH, BRICK_HEIGHT, 14
-        ;call draw_rectangle, edx,brick_y,BRICK_WIDTH, BRICK_HEIGHT, 14
-        add edx, 18
-;        dec ebx
- ;       jnz @@inner
-;    add [brick_y], 10
+    call drawSprite, offset _red, VMEMADR, edx, 40
+    call drawSprite, offset _orange, VMEMADR, edx, 46
+    call drawSprite, offset _yellow, VMEMADR, edx, 52
+    call drawSprite, offset _green, VMEMADR, edx, 58
+    call drawSprite, offset _blue, VMEMADR, edx, 64
+    add edx, BRICK_WIDTH
     loop @@outer
 
-    call draw_controller,[controller_x], [controller_y]
-    call draw_rectangle, [ball_x], [ball_y], BALL_SIZE, BALL_SIZE, 0fh  ;    ball
+    call drawSprite, offset _padle, VMEMADR, [controller_x], [controller_y]
+    call drawSprite, offset _ball, VMEMADR, [ball_x], [ball_y]
     
     ret
 ENDP draw_world
@@ -576,7 +605,7 @@ PROC main
     call ReadFile, offset background_file, offset dataread_bg,DATASIZE
     
 @@main_loop:
-    call clearScreenBuffer
+     call wait_VBLANK, 3
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 01h
@@ -586,7 +615,7 @@ PROC main
     call draw_world
     ;call delay
     xor eax, eax
-    call wait_VBLANK, 3
+
     jmp @@main_loop
     @@end_of_loop:
 
