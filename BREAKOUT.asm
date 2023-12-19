@@ -173,7 +173,7 @@ PROC balraaktcontroller
     jle @@right 
 
     @@bigright:
-    mov [bal_speed_x], 2
+    mov [bal_speed_x], 3
     mov [bal_speed_y], 1
     mov [bal_beweeg_var], 0
     jmp @@stop
@@ -187,19 +187,19 @@ PROC balraaktcontroller
     jmp @@stop
 
     @@right:
-    mov [bal_speed_x], 1
+    mov [bal_speed_x], 2
     mov [bal_speed_y], 1
     mov [bal_beweeg_var], 0
     jmp @@stop
     
     @@left:
-    mov [bal_speed_x], 1
+    mov [bal_speed_x], 3
     mov [bal_speed_y], 1
     mov [bal_beweeg_var], 1
     jmp @@stop
     
     @@bigleft:
-    mov [bal_speed_x], 2
+    mov [bal_speed_x], 3
     mov [bal_speed_y], 1
     mov [bal_beweeg_var], 1
     jmp @@stop
@@ -613,7 +613,7 @@ PROC main
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world
-    ;call delay
+    call delay
     xor eax, eax
 
     jmp @@main_loop
