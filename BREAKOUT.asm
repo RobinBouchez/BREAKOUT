@@ -18,7 +18,7 @@ VMEMADR EQU 0A0000h
 BALL_SIZE EQU 3
 
 CONTROLLER_HEIGHT EQU 3
-CONTROLLER_WIDTH EQU 34
+CONTROLLER_WIDTH EQU 35
 CONTROLLER_COLOR EQU 9
 
 DATASIZE EQU 320*200 ;bytes of data in file
@@ -147,28 +147,66 @@ PROC balraakt
 ENDP balraakt
 
 PROC balraaktcontroller
-	USES eax, ebx, ecx, edx
+	USES eax, ebx, ecx
 	
 	mov eax, [controller_y]
 	cmp [ball_y], eax
 	jne @@stop
-	mov eax, [controller_x]
-	mov ecx, CONTROLLER_WIDTH
+	mov eax, [ball_x]
+	mov ecx, 35
+
 	@@loop:
 	cmp eax, [controller_x]
 	je @@gelijk
 	sub eax, 1
 	loop @@loop
 	jmp @@stop
-	@@gelijk:
-	cmp [bal_beweeg_var], 0
-	je @@null
-	mov [bal_beweeg_var], 0
-	jmp @@stop
-	@@null:
-	mov [bal_beweeg_var], 1
-	
 
+	@@gelijk:
+    cmp ecx, 5
+    jle @@bigleft
+    cmp ecx, 15
+    jle @@left
+    cmp ecx, 25
+    jle @@recht
+    cmp ecx, 30
+    jle @@right 
+
+    @@bigright:
+    mov [bal_speed_x], 2
+    mov [bal_speed_y], 1
+    mov [bal_beweeg_var], 0
+    jmp @@stop
+
+    @@recht:
+    mov [bal_speed_x], 0
+    mov [bal_speed_y], 1
+	cmp [bal_beweeg_var], 3
+    je @@normal
+    mov [bal_beweeg_var], 1
+    jmp @@stop
+
+    @@right:
+    mov [bal_speed_x], 1
+    mov [bal_speed_y], 1
+    mov [bal_beweeg_var], 0
+    jmp @@stop
+    
+    @@left:
+    mov [bal_speed_x], 1
+    mov [bal_speed_y], 1
+    mov [bal_beweeg_var], 1
+    jmp @@stop
+    
+    @@bigleft:
+    mov [bal_speed_x], 2
+    mov [bal_speed_y], 1
+    mov [bal_beweeg_var], 1
+    jmp @@stop
+    
+    @@normal:
+    call change_bal_direction
+	
 	@@stop:
 	ret
 ENDP balraaktcontroller
@@ -267,15 +305,126 @@ ENDP printUnsignedInteger
 PROC delay
     USES eax, ecx, edx
     mov     CX, 00h
-    mov    DX, 1FFFh
+    mov    DX, 1FFh
     mov    AH, 86h
     int    15h
     ret
 ENDP delay
 
+PROC move_bal
+    USES eax
+
+    cmp [bal_beweeg_var], 0
+    je @@null
+    cmp [bal_beweeg_var], 1
+    je @@one
+    cmp [bal_beweeg_var], 2
+    je @@twee
+    jmp @@drie
+
+
+    @@null:
+    mov eax, [ball_x]
+    sub eax, [bal_speed_x]
+    mov [ball_x], eax
+    mov eax, [ball_y]
+    sub eax, [bal_speed_y]
+    mov [ball_y], eax
+    jmp @@stop
+
+
+    @@one:
+    mov eax, [ball_x]
+    add eax, [bal_speed_x]
+    mov [ball_x], eax
+    mov eax, [ball_y]
+    sub eax, [bal_speed_y]
+    mov [ball_y], eax
+    jmp @@stop
+    
+
+    @@twee:
+    mov eax, [ball_x]
+    add eax, [bal_speed_x]
+    mov [ball_x], eax
+    mov eax, [ball_y]
+    add eax, [bal_speed_y]
+    mov [ball_y], eax
+    jmp @@stop
+    
+    @@drie:
+    mov eax, [ball_x]
+    sub eax, [bal_speed_x]
+    mov [ball_x], eax
+    mov eax, [ball_y]
+    add eax, [bal_speed_y]
+    mov [ball_y], eax
+    jmp @@stop
+    
+    @@stop:
+    ret
+ENDP move_bal
+
+PROC change_bal_direction
+    USES eax, ebx
+    
+    mov eax, [bal_beweeg_var]
+    cmp eax, 3
+    je @@drie
+    add eax, 1
+    mov [bal_beweeg_var], eax
+    jmp @@stop
+    
+    @@drie:
+    mov [bal_beweeg_var], 0
+
+    @@stop:
+    ret
+ENDP change_bal_direction
+
+PROC balraaktrand
+    USES eax
+    
+    mov eax, [ball_x]
+    cmp eax, 20
+    jle @@verander_x1
+    cmp eax, 297
+    jge @@verander_x2
+    @@check_y:
+    mov eax, [ball_y]
+    cmp eax, 40
+    jle @@verander_y
+    jmp @@stop
+    
+    
+    @@verander_x1:
+    cmp [bal_beweeg_var], 0
+    je @@normal
+    mov [bal_beweeg_var], 2
+    jmp @@check_y
+    
+    @@verander_x2:
+    cmp [bal_beweeg_var], 2
+    je @@normal
+    mov [bal_beweeg_var], 0
+    jmp @@stop
+    
+
+    @@verander_y:
+    cmp [bal_beweeg_var], 1
+    je @@normal
+    mov [bal_beweeg_var], 3
+    jmp @@stop
+    
+    @@normal:
+    call change_bal_direction
+    
+    @@stop:
+    ret
+ENDP balraaktrand
+    
 
 PROC update_world
-    ;ARG @@key:dword
     USES ebx
     
     cmp ax, 0
@@ -304,32 +453,11 @@ PROC update_world
     
 
     @@beweeg_bal:
-    cmp [bal_beweeg_var], 0
-    je @@null
-
-    mov eax, [ball_x]
-    sub eax, [bal_speed]
-    mov [ball_x], eax
-    mov eax, [ball_y]
-    sub eax, [bal_speed]
-    mov [ball_y], eax
-    jmp @@stop
-    
-    @@null:
-    mov eax, [ball_x]
-    add eax, [bal_speed]
-    mov [ball_x], eax
-    mov eax, [ball_y]
-    add eax, [bal_speed]
-    mov [ball_y], eax
-
-    @@stop:
+    call move_bal
+    call balraaktrand
 	call balraaktcontroller
-    call balraakt, offset block_length
-    cmp eax, 1
-    je @@return
-	
-    mov [bal_beweeg_var], 0
+    ;call balraakt, offset block_length
+    
     @@return:
     ret
 ENDP update_world
@@ -456,7 +584,7 @@ PROC main
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world
-    call delay
+    ;call delay
     xor eax, eax
     call wait_VBLANK, 3
     jmp @@main_loop
@@ -488,8 +616,9 @@ DATASEG
     block_x dd 0, 16, 32, 48, 64, 80, 96, 112
     block_y dd 0, 8, 16, 24, 32, 40, 48, 56
     
-    bal_beweeg_var dd 1
-    bal_speed dd 1
+    bal_beweeg_var dd 0
+    bal_speed_x dd 1
+    bal_speed_y dd 1
 
     controller_x dd 140
     controller_y dd 180
