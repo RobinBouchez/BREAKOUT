@@ -103,19 +103,19 @@ PROC balraakt
     
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     mov ecx, [ebx]            ; get length counter in ecx
-    xor edx, edx
+    mov eax, 12
 
     @@zoek_x:
     add ebx, 4
     mov edx, [dword ptr ebx]
     cmp [ball_x], edx
     jle @@x_gevonden
-    add edx, 1
+    sub eax, 1
     loop @@zoek_x
     jmp @@niet_gevonden
     
     @@x_gevonden:
-    push edx
+    push eax
     
     mov eax, [ball_y]
     cmp eax, 80
@@ -125,28 +125,34 @@ PROC balraakt
     mov ecx, [ebx]            ; get length counter in ecx
     
     add ebx, 52
-    xor edx, edx
+    mov eax, 4
 
     @@zoek_y:
     add ebx, 4
     mov edx, [dword ptr ebx]
     cmp [ball_y], edx
     jle @@y_gevonden
-    add edx, 1
+    sub eax, 1
     loop @@zoek_y
     
     @@niet_gevonden:
     jmp @@stop
     
     @@y_gevonden:
+    mov edx, eax
     mov eax, 52
     mul edx
-    mov eax, ebx
+    mov ebx, [@@arrayptr]
+    add ebx, eax
+    call printUnsignedInteger, eax
+    call printnewline
     pop edx
     mov eax, 4
     mul edx
     add eax, ebx
-    mov [@@arrayptr2 + eax], 0
+    call printUnsignedInteger, eax
+    call printnewline
+    mov [dword ptr ebx], 0
     call change_bal_direction
     
 
