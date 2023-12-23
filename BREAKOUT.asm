@@ -94,55 +94,63 @@ ENDP move_controller
 
 
 PROC balraakt
-    ARG @@arrayptr:dword
-    uses ebx, ecx
+    ARG @@arrayptr:dword, @@arrayptr2:dword
+    uses eax, ebx, ecx, edx
+    
+    mov eax, [ball_x]
+    cmp eax, 300
+    ja @@stop
     
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     mov ecx, [ebx]            ; get length counter in ecx
-    
+    xor edx, edx
+
     @@zoek_x:
     add ebx, 4
-
     mov edx, [dword ptr ebx]
     cmp [ball_x], edx
     jle @@x_gevonden
+    add edx, 1
     loop @@zoek_x
     jmp @@niet_gevonden
     
-    
     @@x_gevonden:
-    sub ebx, 4
-    mov eax, [dword ptr ebx]
-    push eax
-    mov [dword ptr ebx], 1
+    push edx
+    
+    mov eax, [ball_y]
+    cmp eax, 80
+    ja @@stop
     
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     mov ecx, [ebx]            ; get length counter in ecx
     
-    add ebx, 32
-    
+    add ebx, 52
+    xor edx, edx
+
     @@zoek_y:
     add ebx, 4
-    
-    
     mov edx, [dword ptr ebx]
     cmp [ball_y], edx
     jle @@y_gevonden
+    add edx, 1
     loop @@zoek_y
     
     @@niet_gevonden:
-    mov eax, 1
-    push eax
     jmp @@stop
     
     @@y_gevonden:
-    sub ebx, 4
-    mov edx, [dword ptr ebx]
-    mov [dword ptr ebx], 1
+    mov eax, 52
+    mul edx
+    mov eax, ebx
+    pop edx
+    mov eax, 4
+    mul edx
+    add eax, ebx
+    mov [@@arrayptr2 + eax], 0
+    call change_bal_direction
     
 
     @@stop:
-    pop eax
     ret
 ENDP balraakt
 
@@ -181,7 +189,7 @@ PROC balraaktcontroller
 
     @@recht:
     mov [bal_speed_x], 0
-    mov [bal_speed_y], 1
+    mov [bal_speed_y], 2
 	cmp [bal_beweeg_var], 3
     je @@normal
     mov [bal_beweeg_var], 1
@@ -276,21 +284,53 @@ PROC drawSprite
 ENDP drawSprite
 
 PROC draw_world
-    ARG @@arrayptr:dword
+    ARG @@arrayptr:dword, @@arrayptr2:dword
     USES eax,ecx, ebx, edx
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     mov ecx, [ebx]            ; get length counter in ecx
     mov edx, ebx
     add edx, 4
+    mov eax, ebx
+    add eax, 56
 
-@@outer:
-    call drawSprite, offset _red, VMEMADR, [dword ptr edx], 35
-    call drawSprite, offset _orange, VMEMADR, [dword ptr edx], 43
-    call drawSprite, offset _yellow, VMEMADR, [dword ptr edx], 51
-    call drawSprite, offset _green, VMEMADR, [dword ptr edx], 59
-    call drawSprite, offset _blue, VMEMADR, [dword ptr edx], 67
+    mov ebx, [@@arrayptr2]
+
+    @@outer:
+    push eax
+    cmp [dword ptr ebx], 1
+    jne @@skip1
+    call drawSprite, offset _red, VMEMADR, [dword ptr edx], [dword ptr eax]
+    @@skip1:
+    add ebx, 52
+    add eax, 4
+    cmp [dword ptr ebx], 1
+    jne @@skip2
+    call drawSprite, offset _orange, VMEMADR, [dword ptr edx], [dword ptr eax]
+    @@skip2:
+    add ebx, 52
+    add eax, 4
+    cmp [dword ptr ebx], 1
+    jne @@skip3
+    call drawSprite, offset _yellow, VMEMADR, [dword ptr edx], [dword ptr eax]
+    @@skip3:
+    add ebx, 52
+    add eax, 4
+    cmp [dword ptr ebx], 1
+    jne @@skip4
+    call drawSprite, offset _green, VMEMADR, [dword ptr edx], [dword ptr eax]
+    @@skip4:
+    add ebx, 52
+    add eax, 4
+    cmp [dword ptr ebx], 1
+    jne @@skip5
+    call drawSprite, offset _blue, VMEMADR, [dword ptr edx], [dword ptr eax]
+    @@skip5:
+    sub ebx, 204
     add edx, 4
-    loop @@outer
+    pop eax
+    sub ecx, 1
+    cmp ecx, 0
+    jne @@outer
 
     call drawSprite, offset _padle, VMEMADR, [controller_x], [controller_y]
     call drawSprite, offset _ball, VMEMADR, [ball_x], [ball_y]
@@ -472,7 +512,7 @@ PROC update_world
     @@move_cont_left:
     mov eax, [controller_x]
     sub eax, 2
-    cmp eax, 0
+    cmp eax, 10
     je @@beweeg_bal
     mov [controller_x], eax
     jmp @@beweeg_bal
@@ -480,7 +520,7 @@ PROC update_world
     @@move_cont_right:
     mov eax, [controller_x]
     add eax, 2
-    cmp eax, 290
+    cmp eax, 280
     je @@beweeg_bal
     mov [controller_x], eax
     
@@ -489,7 +529,7 @@ PROC update_world
     call move_bal
     call balraaktrand
 	call balraaktcontroller
-    ;call balraakt, offset block_length
+    call balraakt, offset block_length, offset available_blocks
     
     @@return:
     ret
@@ -616,7 +656,7 @@ PROC main
     je @@end_of_loop
     call DrawBG, offset dataread_bg
     call update_world 
-    call draw_world, offset block_length
+    call draw_world, offset block_length , offset available_blocks
     call delay
     xor eax, eax
 
@@ -648,6 +688,12 @@ DATASEG
     block_length dd 13
     block_x dd 18,40,62,84,106,128,150,172,194,216,238,260,282
     block_y dd 35,43,51,59,67
+    
+    available_blocks dd 1,1,1,1,1,1,1,1,1,1,1,1,1
+                     dd 1,1,1,1,1,1,1,1,1,1,1,1,1
+                     dd 1,1,1,1,1,1,1,1,1,1,1,1,1
+                     dd 1,1,1,1,1,1,1,1,1,1,1,1,1
+                     dd 1,1,1,1,1,1,1,1,1,1,1,1,1
     
     bal_beweeg_var dd 0
     bal_speed_x dd 1
