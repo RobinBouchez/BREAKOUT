@@ -66,13 +66,6 @@ PROC draw_rectangle
     ret
 ENDP draw_rectangle
 
-PROC draw_controller
-    ARG @@x0, @@y0
-
-    call draw_rectangle, [@@x0], [@@y0], CONTROLLER_WIDTH, CONTROLLER_HEIGHT, CONTROLLER_COLOR
-    ret
-ENDP draw_controller
-
 PROC move_controller
     ARG @@x0
 
@@ -655,7 +648,7 @@ PROC main
     call ReadFile, offset background_file, offset dataread_bg,DATASIZE
     
 @@main_loop:
-     call wait_VBLANK, 3
+    call wait_VBLANK, 3
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 01h
@@ -665,7 +658,6 @@ PROC main
     call draw_world, offset block_length , offset available_blocks
     call delay
     xor eax, eax
-
     jmp @@main_loop
     @@end_of_loop:
 
@@ -704,6 +696,8 @@ DATASEG
     bal_beweeg_var dd 0
     bal_speed_x dd 1
     bal_speed_y dd 1
+    
+    score dd 0
 
     controller_x dd 140
     controller_y dd 180
