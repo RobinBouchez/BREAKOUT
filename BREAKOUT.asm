@@ -76,8 +76,16 @@ PROC balraakt
     
     @@x_gevonden:
     sub eax, 4
+    cmp [ball_x], edx
+    je @@pone
+    push 0
+    push eax
+    jmp @@init_y
+    @@pone:
+    push 1
     push eax
 
+    @@init_y:
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     add ebx, 56 ;; naar einde van y-list gaan
     mov ecx, 5
@@ -98,28 +106,40 @@ PROC balraakt
     @@y_gevonden:
     mov ebx, [@@arrayptr2]
     add ebx, eax
+
     pop eax
     add ebx, eax
     mov edx, [dword ptr ebx]
     cmp edx, 0
     je @@stop
     mov [dword ptr ebx], 0
-    xor eax, eax
-    xor ebx, ebx
-    xor edx, edx
+
+    pop eax
+    cmp eax, 1
+    je @@rand
+
     mov eax, [bal_beweeg_var]
     cmp eax, 0
     je @@case1
 
-    
+
     mov [bal_beweeg_var], 2
     jmp @@stop
     
     @@case1:
     mov [bal_beweeg_var], 3
     jmp @@stop
-    call move_bal
+    
+    @@rand:
+    mov eax, [bal_beweeg_var]
+    cmp eax, 0
+    je @@case3
+    mov [bal_beweeg_var], 0
     jmp @@stop
+    
+    @@case3:
+    mov [bal_beweeg_var], 1
+
     
     @@stop:
     ret
@@ -143,14 +163,15 @@ PROC balraaktcontroller
 	jmp @@stop
 
 	@@gelijk:
-    cmp ecx, 5
+    cmp ecx, 4
     jle @@bigleft
-    cmp ecx, 15
-    jle @@left
-    cmp ecx, 25
+    cmp ecx, 10
+    jle @@verhoog
+    cmp ecx, 18
     jle @@recht
-    cmp ecx, 30
-    jle @@right 
+    cmp ecx, 28
+    jle @@verhoog
+    jmp @@bigright
 
     @@bigright:
     mov [bal_speed_x], 3
@@ -158,25 +179,23 @@ PROC balraaktcontroller
     mov [bal_beweeg_var], 0
     jmp @@stop
 
+
     @@recht:
-    mov [bal_speed_x], 0
-    mov [bal_speed_y], 2
 	cmp [bal_beweeg_var], 3
     je @@normal
     mov [bal_beweeg_var], 1
     jmp @@stop
 
-    @@right:
-    mov [bal_speed_x], 2
-    mov [bal_speed_y], 1
-    mov [bal_beweeg_var], 0
-    jmp @@stop
     
-    @@left:
-    mov [bal_speed_x], 3
-    mov [bal_speed_y], 1
-    mov [bal_beweeg_var], 1
-    jmp @@stop
+    @@verhoog:
+    mov eax, [bal_speed_x]
+    cmp eax, 5
+    jge @@recht
+    add eax, 1
+    mov [bal_speed_x], eax
+    mov [bal_speed_y], 2
+    jmp @@recht
+
     
     @@bigleft:
     mov [bal_speed_x], 3
@@ -487,13 +506,30 @@ PROC main
     mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 01h
     je @@end_of_loop
+    cmp [ball_y], 185
+    jge @@lost
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world, offset block_length , offset available_blocks
-    ;   call printUnsignedInteger, [score]
-    ;call delay
     xor eax, eax
     jmp @@main_loop
+
+    @@lost:
+    mov ah, 09h
+    mov edx, offset LostMsg
+    int 21h
+    @@lost_loop:
+    call DrawBG, offset dataread_bg
+    call delay
+    call process_user_input
+    mov     al, [__keyb_rawScanCode]; last pressed key
+    cmp     al, 01h
+    je @@end_of_loop
+    cmp     al, 39h
+    je @@main_loop
+    call delay
+    jmp @@lost_loop
+
     @@end_of_loop:
 
     call __keyb_uninstallKeyboardHandler
@@ -550,6 +586,8 @@ DATASEG
     openErrorMsg db "could not open file", 13, 10, '$'
     readErrorMsg db "could not read data", 13, 10, '$'
     closeErrorMsg db "error during file closing", 13, 10, '$'
+    LostMsg db "You Lost...  Press esc to exit and space to restart!", 13, 10, '$'
+    
     
 ; -------------------------------------------------------------------
 UDATASEG
