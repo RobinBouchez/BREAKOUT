@@ -550,12 +550,9 @@ PROC main
 ; -------------------------------------------------------------------
 DATASEG
     _screenBuffer db 64000 dup(?)
-    _paletteArray db 0, 0, 0, 60, 0, 0, 60, 30, 0, 60, 60, 0, 0, 60, 0, 0, 0, 60, 63, 63, 63
     
     ball_x dd 155
     ball_y dd 177
-    ball_width dd 100
-    ball_height dd 100
     
     block_length dd 13
     block_x dd 18,40,62,84,106,128,150,172,194,216,238,260,282
@@ -580,8 +577,6 @@ DATASEG
     paddle_pos    dw    140
     paddle_speed dw    0
     
-    brick_y dd 10
-    
     ; scancode values
     keybscancodes     db 29h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0Ah, 0Bh, 0Ch, 0Dh, 0Eh,     52h, 47h, 49h,     45h, 35h, 00h, 4Ah
                     db 0Fh, 10h, 11h, 12h, 13h, 14h, 15h, 16h, 17h, 18h, 19h, 1Ah, 1Bh,         53h, 4Fh, 51h,     47h, 48h, 49h,         1Ch, 4Eh
@@ -594,7 +589,6 @@ DATASEG
     readErrorMsg db "could not read data", 13, 10, '$'
     closeErrorMsg db "error during file closing", 13, 10, '$'
     LostMsg db "You Lost...  Press esc to exit and space to restart!", 13, 10, '$'
-    
     
 ; -------------------------------------------------------------------
 UDATASEG
