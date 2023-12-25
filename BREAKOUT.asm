@@ -29,8 +29,22 @@ DATASIZE EQU 320*200 ;bytes of data in file
 ; -------------------------------------------------------------------
 CODESEG
 
+
+PROC update_score
+    ARG @@scoreptr:dword
+    USES eax
+
+    mov eax, [@@scoreptr]  ; Load the current value of 'score' into eax
+    add eax, 1       ; Increment 'score' by 1
+    mov [@@scoreptr], eax  ; Store the updated value back to 'score'
+    xor eax, eax
+    
+    ret
+ENDP update_score
+
 PROC move_controller
     ARG @@x0
+    USES edx, eax
 
     push edx
 
@@ -205,17 +219,6 @@ PROC balraaktcontroller
 	ret
 ENDP balraaktcontroller
 
-PROC update_score
-    USES eax
-    
-    mov eax, [score]  ; Load the current value of 'score' into eax
-    add eax, 1       ; Increment 'score' by 1
-    mov [score], eax  ; Store the updated value back to 'score'
-    xor eax, eax
-    
-    ret
-ENDP update_score
-
 PROC process_user_input
     USES ebx, ecx
     mov ecx, KEYCNT
@@ -229,9 +232,6 @@ PROC process_user_input
     
     ret
 ENDP process_user_input
-
-
-
 
 PROC draw_world
     ARG @@arrayptr:dword, @@arrayptr2:dword
