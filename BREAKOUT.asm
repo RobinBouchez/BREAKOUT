@@ -79,19 +79,19 @@ PROC balraakt
     cmp [ball_x], edx
     je @@pone
     push 0
+    ;add eax, 4
     push eax
     jmp @@init_y
     @@pone:
     push 1
     push eax
-
+    
     @@init_y:
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     add ebx, 56 ;; naar einde van y-list gaan
     mov ecx, 5
     mov eax, 0
     
-
     @@zoek_y:
     mov edx, [dword ptr ebx]
     add edx, 5
@@ -102,7 +102,6 @@ PROC balraakt
     loop @@zoek_y
     jmp @@stop
 
-    
     @@y_gevonden:
     mov ebx, [@@arrayptr2]
     add ebx, eax
@@ -122,7 +121,6 @@ PROC balraakt
     cmp eax, 0
     je @@case1
 
-
     mov [bal_beweeg_var], 2
     jmp @@stop
     
@@ -140,7 +138,6 @@ PROC balraakt
     @@case3:
     mov [bal_beweeg_var], 1
 
-    
     @@stop:
     ret
 ENDP balraakt
@@ -467,7 +464,7 @@ PROC update_world
     
     @@move_cont_left:
     mov eax, [controller_x]
-    sub eax, 2
+    sub eax, 4
     cmp eax, 10
     je @@beweeg_bal
     mov [controller_x], eax
@@ -475,7 +472,7 @@ PROC update_world
     
     @@move_cont_right:
     mov eax, [controller_x]
-    add eax, 2
+    add eax, 4
     cmp eax, 280
     je @@beweeg_bal
     mov [controller_x], eax
