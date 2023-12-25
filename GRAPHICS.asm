@@ -93,7 +93,6 @@ PROC drawSprite
     ret
 ENDP drawSprite
 
-
 PROC ReadFile
     ARG     @@filepathptr: dword,@@dataptr: dword,@@noofbytes: dword
     USES eax, ebx, ecx, edx, esi, edi
@@ -174,59 +173,3 @@ proc wait_VBLANK
 
     ret
 endp wait_VBLANK
-
-
-PROC draw_world
-    ARG @@arrayptr:dword, @@arrayptr2:dword
-    USES eax,ecx, ebx, edx
-    mov ebx, [@@arrayptr]    ; store pointer in ebx
-    mov ecx, [ebx]            ; get length counter in ecx
-    mov edx, ebx
-    add edx, 4
-    mov eax, ebx
-    add eax, 56
-
-    mov ebx, [@@arrayptr2]
-
-    @@outer:
-    push eax
-    cmp [dword ptr ebx], 1
-    jne @@skip1
-    call drawSprite, offset _red, VMEMADR, [dword ptr edx], [dword ptr eax]
-    @@skip1:
-    add ebx, 52
-    add eax, 4
-    cmp [dword ptr ebx], 1
-    jne @@skip2
-    call drawSprite, offset _orange, VMEMADR, [dword ptr edx], [dword ptr eax]
-    @@skip2:
-    add ebx, 52
-    add eax, 4
-    cmp [dword ptr ebx], 1
-    jne @@skip3
-    call drawSprite, offset _yellow, VMEMADR, [dword ptr edx], [dword ptr eax]
-    @@skip3:
-    add ebx, 52
-    add eax, 4
-    cmp [dword ptr ebx], 1
-    jne @@skip4
-    call drawSprite, offset _green, VMEMADR, [dword ptr edx], [dword ptr eax]
-    @@skip4:
-    add ebx, 52
-    add eax, 4
-    cmp [dword ptr ebx], 1
-    jne @@skip5
-    call drawSprite, offset _blue, VMEMADR, [dword ptr edx], [dword ptr eax]
-    @@skip5:
-    sub ebx, 204
-    add edx, 4
-    pop eax
-    sub ecx, 1
-    cmp ecx, 0
-    jne @@outer
-
-    call drawSprite, offset _padle, VMEMADR, [controller_x], [controller_y]
-    call drawSprite, offset _ball, VMEMADR, [ball_x], [ball_y]
-    
-    ret
-ENDP draw_world

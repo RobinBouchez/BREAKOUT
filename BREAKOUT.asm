@@ -191,6 +191,14 @@ PROC balraaktcontroller
 	ret
 ENDP balraaktcontroller
 
+PROC update_score 
+    mov eax, [score]  ; Load the current value of 'score' into eax
+    add eax, 1       ; Increment 'score' by 1
+    mov [score], eax  ; Store the updated value back to 'score'
+    xor eax, eax
+    
+    ret
+ENDP update_score
 
 PROC process_user_input
     USES ebx, ecx
@@ -480,7 +488,8 @@ PROC main
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world, offset block_length , offset available_blocks
-    call delay
+    ;   call printUnsignedInteger, [score]
+    ;call delay
     xor eax, eax
     jmp @@main_loop
     @@end_of_loop:
