@@ -191,7 +191,9 @@ PROC balraaktcontroller
 	ret
 ENDP balraaktcontroller
 
-PROC update_score 
+PROC update_score
+    USES eax
+    
     mov eax, [score]  ; Load the current value of 'score' into eax
     add eax, 1       ; Increment 'score' by 1
     mov [score], eax  ; Store the updated value back to 'score'
