@@ -236,6 +236,8 @@ PROC process_user_input
 ENDP process_user_input
 
 
+
+
 PROC draw_world
     ARG @@arrayptr:dword, @@arrayptr2:dword
     USES eax,ecx, ebx, edx
@@ -518,6 +520,7 @@ PROC main
     mov ah, 09h
     mov edx, offset LostMsg
     int 21h
+
     @@lost_loop:
     call DrawBG, offset dataread_bg
     call delay
@@ -526,9 +529,18 @@ PROC main
     cmp     al, 01h
     je @@end_of_loop
     cmp     al, 39h
-    je @@main_loop
+    je @@restart_main_loop
     call delay
     jmp @@lost_loop
+    
+    @@restart_main_loop:
+    mov ecx, 64
+    mov ebx, [available_blocks]
+    @@fill_loop:
+    mov [dword ptr ebx], 1
+    add ebx, 4
+    loop @@fill_loop
+    jmp @@main_loop
 
     @@end_of_loop:
 
