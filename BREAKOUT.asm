@@ -78,12 +78,10 @@ PROC balraakt
     sub eax, 4
     push eax
 
-    @@change_y:
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     add ebx, 56 ;; naar einde van y-list gaan
     mov ecx, 5
     mov eax, 0
-    
     
 
     @@zoek_y:
@@ -106,11 +104,23 @@ PROC balraakt
     cmp edx, 0
     je @@stop
     mov [dword ptr ebx], 0
-    call change_bal_direction
+    xor eax, eax
+    xor ebx, ebx
+    xor edx, edx
+    mov eax, [bal_beweeg_var]
+    cmp eax, 0
+    je @@case1
+
+    
+    mov [bal_beweeg_var], 2
+    jmp @@stop
+    
+    @@case1:
+    mov [bal_beweeg_var], 3
+    jmp @@stop
     call move_bal
     jmp @@stop
-  
-
+    
     @@stop:
     ret
 ENDP balraakt
@@ -364,6 +374,7 @@ PROC change_bal_direction
     
     @@drie:
     mov [bal_beweeg_var], 0
+    jmp @@stop
 
     @@stop:
     ret
