@@ -10,8 +10,6 @@ INCLUDE "SPRITES.asm"
 ; compile-time constants (with macros)
 
 KEYCNT EQU 89        ; number of keys to track
-BRICK_WIDTH EQU 16
-BRICK_HEIGHT EQU 8
 SCREEN_HEIGHT equ 200
 SCREEN_WIDTH EQU 320
 VMEMADR EQU 0A0000h
