@@ -93,6 +93,22 @@ PROC drawSprite
     ret
 ENDP drawSprite
 
+PROC displayString
+    ARG @@row:DWORD, @@column:DWORD, @@offset:DWORD
+    USES EAX, EBX, EDX
+    
+    MOV EDX, [@@row] ; row in EDX
+    MOV EBX, [@@column] ; column in EBX
+    MOV AH, 02H ; set cursor position
+    SHL EDX, 08H ; row in DH (00H is top)
+    MOV DL, BL ; column in DL (00H is left)
+    MOV BH, 0 ; page number in BH
+    INT 10H ; raise interrupt
+    MOV AH, 09H ; write string to standard output
+    MOV EDX, [@@offset] ; offset of ’$’-terminated string in EDX
+    INT 21H ; raise interrupt
+    RET
+ENDP displayString
 
 PROC ReadFile
     ARG     @@filepathptr: dword,@@dataptr: dword,@@noofbytes: dword
