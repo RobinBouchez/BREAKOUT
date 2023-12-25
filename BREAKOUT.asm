@@ -51,6 +51,11 @@ ENDP move_controller
 PROC balraakt
     ARG @@arrayptr:dword, @@arrayptr2:dword
     uses eax, ebx, ecx, edx
+
+
+    mov eax, [ball_y]
+    cmp eax, 80
+    ja @@stop
     
     mov eax, [ball_x]
     cmp eax, 300
@@ -58,57 +63,60 @@ PROC balraakt
     
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     mov ecx, [ebx]            ; get length counter in ecx
-    mov eax, 12
+    add ebx, 4
+    mov eax, 0
 
     @@zoek_x:
-    add ebx, 4
     mov edx, [dword ptr ebx]
     cmp [ball_x], edx
     jle @@x_gevonden
-    sub eax, 1
+    add eax, 4
+    add ebx, 4
     loop @@zoek_x
     jmp @@niet_gevonden
     
     @@x_gevonden:
+    sub eax, 4
     push eax
     
-    mov eax, [ball_y]
-    cmp eax, 80
-    ja @@stop
-    
     mov ebx, [@@arrayptr]    ; store pointer in ebx
-    mov ecx, [ebx]            ; get length counter in ecx
+    mov ecx, 5            ; get length counter in ecx
+    add ebx, 56
+    mov eax, 0
     
-    add ebx, 52
-    mov eax, 4
+    
 
     @@zoek_y:
-    add ebx, 4
     mov edx, [dword ptr ebx]
+    add edx, 8
     cmp [ball_y], edx
     jle @@y_gevonden
-    sub eax, 1
+    add ebx, 4
+    add eax, 52
     loop @@zoek_y
     
     @@niet_gevonden:
     jmp @@stop
     
     @@y_gevonden:
-    mov edx, eax
-    mov eax, 52
-    mul edx
-    mov ebx, [@@arrayptr]
+    mov ebx, [@@arrayptr2]
     add ebx, eax
-    call printUnsignedInteger, eax
-    call printnewline
-    pop edx
+    pop eax
+    add ebx, eax
     mov eax, 4
-    mul edx
-    add eax, ebx
-    call printUnsignedInteger, eax
-    call printnewline
-    mov [dword ptr ebx], 0
+    @@compare_y:
+    cmp [dword ptr ebx], 0
+    je @@y_hoger
+    mov [ebx], 0
     call change_bal_direction
+    jmp @@stop
+    
+    @@y_hoger:
+    cmp eax, 0
+    je @@stop
+    sub ebx, 52
+    dec eax
+    jmp @@compare_y
     
 
     @@stop:
@@ -505,6 +513,9 @@ DATASEG
                      dd 1,1,1,1,1,1,1,1,1,1,1,1,1
                      dd 1,1,1,1,1,1,1,1,1,1,1,1,1
                      dd 1,1,1,1,1,1,1,1,1,1,1,1,1
+                     
+    block_pos dd 18,35, 40,35, 62,35, 84,35, 106,35, 128,35 ,150,35, 172,35, 194,35, 216,35, 238,35, 260,35, 282,35
+              dd 18,43, 40,35, 62,35, 84,35, 106,35, 128,35 ,150,35, 172,35, 194,35, 216,35, 238,35, 260,35, 282,35
     
     bal_beweeg_var dd 0
     bal_speed_x dd 1
