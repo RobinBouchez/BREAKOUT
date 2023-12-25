@@ -486,10 +486,6 @@ PROC main
     @@end_of_loop:
 
     call __keyb_uninstallKeyboardHandler
-
-    ; Wait for keystroke and read character.
-    mov ah,00h
-    int 16h
     
     call    terminate_process
  ENDP main
