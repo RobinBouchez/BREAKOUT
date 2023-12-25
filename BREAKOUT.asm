@@ -73,20 +73,18 @@ PROC balraakt
     add ebx, 4
     loop @@zoek_x
     jmp @@stop
-    
+
     @@x_gevonden:
     sub eax, 4
-    cmp [ball_x], edx
+    cmp ebx, edx
     je @@pone
     push 0
-    ;add eax, 4
-    push eax
     jmp @@init_y
     @@pone:
     push 1
-    push eax
     
     @@init_y:
+    push eax
     mov ebx, [@@arrayptr]    ; store pointer in ebx
     add ebx, 56 ;; naar einde van y-list gaan
     mov ecx, 5
@@ -186,7 +184,7 @@ PROC balraaktcontroller
     
     @@verhoog:
     mov eax, [bal_speed_x]
-    cmp eax, 5
+    cmp eax, 3
     jge @@recht
     add eax, 1
     mov [bal_speed_x], eax
