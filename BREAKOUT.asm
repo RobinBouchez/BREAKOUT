@@ -206,23 +206,14 @@ PROC draw_world
     cmp ecx, 0
     jne @@outer
 
-    cmp [lives], 3
-    je @@3lives
-    cmp [lives], 2
-    je @@2lives
-    cmp [lives], 1
-    je @@1lives
+
+    mov ecx, [lives]
     mov edx, [heart_x]
     
-    @@3lives:
-    call drawSprite, offset _heart, VMEMADR, [dword ptr edx], [heart_y]
-    @@2lives:
-    add ebx, 10
-    call drawSprite, offset _heart, VMEMADR, [dword ptr edx], [heart_y]
-    @@1lives:
-    add ebx, 10
-    call drawSprite, offset _heart, VMEMADR, [dword ptr edx], [heart_y]
-
+    @@lives_loop:
+    call drawSprite, offset _heart, VMEMADR, edx, [heart_y]
+    add edx, 12
+    loop @@lives_loop
 
     call drawSprite, offset _padle, VMEMADR, [controller_x], [controller_y]
     call drawSprite, offset _ball, VMEMADR, [ball_x], [ball_y]
@@ -707,7 +698,7 @@ DATASEG
     score dd 0
     lives dd 3
 
-    heart_x dd 20
+    heart_x dd 10
     heart_y dd 4
     
     controller_x dd 140
