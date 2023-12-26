@@ -601,10 +601,10 @@ PROC main
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world, offset block_length , offset available_blocks
-    mov ah, 2       ; Function to display a character
-    mov edx, [score]   ; Load the score into DL
-    add dl, '0'     ; Convert the score to ASCII
-    int 21h         ; Display the character
+    ;mov ah, 2       ; Function to display a character
+    ;mov edx, [score]   ; Load the score into DL
+    ;add dl, '0'     ; Convert the score to ASCII
+    ;int 21h         ; Display the character
     xor eax, eax
     jmp @@main_loop
 
