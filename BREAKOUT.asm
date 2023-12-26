@@ -668,7 +668,7 @@ DATASEG
     bal_speed_x dd 1
     bal_speed_y dd 1
     
-    score dd 0
+    score db 0
 
     controller_x dd 140
     controller_y dd 180
