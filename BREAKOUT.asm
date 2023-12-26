@@ -402,16 +402,16 @@ PROC balraakt
     loop @@zoek_x
     
     @@x_gevonden:
-    ;mov ebx, [ball_x]
     cmp [ball_x], 40
-    jle @@skip_sub
+    jl @@skip_sub
     sub eax, 4
     @@skip_sub:
+    sub edx, 3
     cmp [ball_x], edx
-    je @@pone
-    add edx, 17
+    jge @@pone
+    sub edx, 18
     cmp [ball_x], edx
-    jge @@ptwo
+    jle @@ptwo
     push 0
     jmp @@init_y
     @@pone:
@@ -441,19 +441,15 @@ PROC balraakt
     jmp @@stop
 
     @@y_gevonden:
-    mov ecx, edx
+
     mov ebx, [@@arrayptr2]
     add ebx, eax
-
     pop eax
     add ebx, eax
     mov edx, [dword ptr ebx]
-    cmp ecx, [ball_y]
-    je @@edgecase
     cmp edx, 0
     je @@stop
     mov [dword ptr ebx], 0
-
     pop eax
     cmp eax, 1
     je @@rand
