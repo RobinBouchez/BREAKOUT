@@ -442,7 +442,6 @@ PROC balraakt
     jmp @@stop
 
     @@y_gevonden:
-    call update_score ;, offset score
     mov ecx, edx
     sub ecx, 4
     mov ebx, [@@arrayptr2]
@@ -452,6 +451,7 @@ PROC balraakt
     mov edx, [dword ptr ebx]
     cmp edx, 0
     je @@stop
+    call update_score ;, offset score
     mov [dword ptr ebx], 0
     pop eax
     cmp [ball_y], ecx
