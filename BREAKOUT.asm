@@ -496,7 +496,6 @@ PROC update_world
     cmp eax, 20h
     je @@move_cont_right
     jmp @@beweeg_bal
-    jmp @@beweeg_bal
     
     @@move_cont_left:
     mov eax, [controller_x]
@@ -535,6 +534,10 @@ PROC main
     call    set_video_mode, 13h
     call __keyb_installKeyboardHandler
     call ReadFile, offset background_file, offset dataread_bg,DATASIZE
+     call ReadFile, offset start_file, offset dataread_start,DATASIZE
+        mov ah, 09h
+    mov edx, offset scoremsg
+    int 21h
     
 @@main_loop:
     call wait_VBLANK, 3
@@ -547,11 +550,12 @@ PROC main
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world, offset block_length , offset available_blocks
+
     xor eax, eax
     jmp @@main_loop
 
     @@lost:
-    call DrawBG, offset dataread_bg
+    call DrawBG, offset dataread_start
     mov ah, 09h
     mov edx, offset LostMsg
     int 21h
@@ -639,6 +643,7 @@ DATASEG
 ; -------------------------------------------------------------------
 UDATASEG
     dataread_bg db DATASIZE dup (?)
+    dataread_start db DATASIZE dup (?)
     
 ; -------------------------------------------------------------------
 ; STACK
