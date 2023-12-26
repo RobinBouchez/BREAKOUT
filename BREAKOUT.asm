@@ -536,7 +536,7 @@ PROC update_world
     
     @@move_cont_left:
     mov eax, [controller_x]
-    sub eax, 4
+    sub eax, [controller_speed]
     cmp eax, 10
     jle @@beweeg_bal
     mov [controller_x], eax
@@ -544,7 +544,7 @@ PROC update_world
     
     @@move_cont_right:
     mov eax, [controller_x]
-    add eax, 4
+    add eax, [controller_speed]
     cmp eax, 280
     jge @@beweeg_bal
     mov [controller_x], eax
@@ -602,10 +602,6 @@ PROC main
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world, offset block_length , offset available_blocks
-    ;mov ah, 2       ; Function to display a character
-    ;mov edx, [score]   ; Load the score into DL
-    ;add dl, '0'     ; Convert the score to ASCII
-    ;int 21h         ; Display the character
     xor eax, eax
     jmp @@main_loop
 
@@ -686,7 +682,6 @@ DATASEG
                      dd 1,1,1,1,1,1,1,1,1,1,1,1,1
                      dd 1,1,1,1,1,1,1,1,1,1,1,1,1
                      
-    
     bal_beweeg_var dd 0
     bal_speed_x dd 1
     bal_speed_y dd 1
@@ -696,10 +691,8 @@ DATASEG
 
     controller_x dd 140
     controller_y dd 180
+    controller_speed dd 4
 
-    paddle_pos    dw    140
-    paddle_speed dw    0
-    
     ; scancode values
     keybscancodes     db 29h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0Ah, 0Bh, 0Ch, 0Dh, 0Eh,     52h, 47h, 49h,     45h, 35h, 00h, 4Ah
                     db 0Fh, 10h, 11h, 12h, 13h, 14h, 15h, 16h, 17h, 18h, 19h, 1Ah, 1Bh,         53h, 4Fh, 51h,     47h, 48h, 49h,         1Ch, 4Eh
