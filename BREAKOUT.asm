@@ -38,10 +38,8 @@ CODESEG
 
 
 PROC update_score
-    ;ARG @@scoreptr:dword
     USES eax
 
-    ;mov ebx, [@@scoreptr]  ; Load the current value of 'score' into eax
     mov eax, [score]
     add eax, 1       ; Increment 'score' by 1
     mov [score], eax  ; Store the updated value back to 'score'
@@ -616,7 +614,7 @@ PROC main
 
     @@lost:
     mov eax, [lives]
-    dec eax
+    sub eax, 1
     mov [lives], eax
     cmp eax, 0
     ja @@restart_vars
@@ -648,6 +646,8 @@ PROC main
     @@restart_main_loop:
     mov cx, 64
     mov ebx, 0
+    mov [score], 0
+    mov [lives], 3
     @@fill_loop:
     mov [available_blocks +  ebx], 1
     add ebx,4
@@ -660,8 +660,6 @@ PROC main
     mov [bal_speed_x], 1
     mov [bal_speed_y], 1
     mov [controller_x], 140
-    mov [lives], 3
-    mov [score], 0
     jmp @@main_loop
 
     @@end_of_loop:
