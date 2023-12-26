@@ -407,7 +407,7 @@ PROC balraakt
     jl @@skip_sub
     sub eax, 4
     @@skip_sub:
-    sub edx, 4
+    sub edx, 3
     cmp [ball_x], edx
     jge @@pone
     sub edx, 18
@@ -433,7 +433,7 @@ PROC balraakt
     
     @@zoek_y:
     mov edx, [dword ptr ebx]
-    add edx, 5
+    add edx, 8
     cmp [ball_y], edx
     jle @@y_gevonden
     add ebx, 4
