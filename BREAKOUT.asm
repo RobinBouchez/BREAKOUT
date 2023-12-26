@@ -486,7 +486,7 @@ PROC update_world
     mov eax, [controller_x]
     sub eax, 4
     cmp eax, 10
-    je @@beweeg_bal
+    jle @@beweeg_bal
     mov [controller_x], eax
     jmp @@beweeg_bal
     
@@ -494,7 +494,7 @@ PROC update_world
     mov eax, [controller_x]
     add eax, 4
     cmp eax, 280
-    je @@beweeg_bal
+    jge @@beweeg_bal
     mov [controller_x], eax
     
 
@@ -514,6 +514,7 @@ PROC main
     
     push ds
     pop  es
+    @@go_restart:
     
     call    set_video_mode, 13h
     call __keyb_installKeyboardHandler
@@ -540,26 +541,31 @@ PROC main
     int 21h
 
     @@lost_loop:
+    call delay
     call wait_VBLANK, 3
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 01h
     je @@end_of_loop
-    call process_user_input
-    mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 39h
     je @@restart_main_loop
-    ;call delay
+    call delay
     jmp @@lost_loop
     
     @@restart_main_loop:
-    mov ecx, 64
-    mov ebx, [available_blocks]
+    mov cx, 64
+    mov ebx, 0
     @@fill_loop:
-    mov [dword ptr ebx], 1
-    add ebx, 4
+    mov [available_blocks +  ebx], 1
+    add ebx,4
     loop @@fill_loop
-    jmp @@main_loop
+    mov [ball_y], 155
+    mov [ball_y], 177
+    mov [bal_beweeg_var], 0
+    mov [bal_speed_x], 1
+    mov [bal_speed_y], 1
+    mov [controller_x], 140
+    jmp @@go_restart
 
     @@end_of_loop:
 
