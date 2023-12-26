@@ -53,9 +53,9 @@ DATASEG
             db 14 , 14 , 14 , 14 , 14 , 14 , 14 , 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14
             
     _ball dw BALL_SIZE, BALL_SIZE
+            db 0, 0fh, 0
             db 0fh, 0fh, 0fh
-            db 0fh, 0fh, 0fh
-            db 0fh, 0fh, 0fh
+            db 0, 0fh, 0
 
     _padle dw 34 , 3; W = 8 , h = 8
             db 9,9,9,9,9,9,9,9,9,9, 9,9,9,9,9,9,9,9,9,9, 9,9,9,9,9,9,9,9,9,9, 9,9,9,9
@@ -64,7 +64,7 @@ DATASEG
 
   
    background_file db "IMAGEDP.bin", 0  
-   start_file db "START.bin", 0
+   start_file db "INTRO.bin", 0
    
    scoremsg db "0", 13, 10, '$'
     
