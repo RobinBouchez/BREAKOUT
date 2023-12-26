@@ -534,13 +534,14 @@ PROC main
     jmp @@main_loop
 
     @@lost:
+    call DrawBG, offset dataread_bg
     mov ah, 09h
     mov edx, offset LostMsg
     int 21h
 
     @@lost_loop:
-    call DrawBG, offset dataread_bg
     call delay
+    call wait_VBLANK, 3
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 01h
