@@ -64,6 +64,3 @@ DATASEG
   
    background_file db "IMAGEDP.bin", 0  
    start_file db "INTRO.bin", 0
-   
-   scoremsg db "0", 13, 10, '$'
-    
