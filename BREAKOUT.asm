@@ -693,7 +693,8 @@ DATASEG
     readErrorMsg db "could not read data", 13, 10, '$'
     closeErrorMsg db "error during file closing", 13, 10, '$'
     LostMsg db "You Lost...  Press esc to exit and space to restart!", 13, 10, '$'
-    
+    scoreMsg db "Score: ", 13, 10, '$'
+    LivesMsg db "Lives: ", 13, 10, '$'
 ; -------------------------------------------------------------------
 UDATASEG
     dataread_bg db DATASIZE dup (?)
