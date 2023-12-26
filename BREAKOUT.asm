@@ -38,7 +38,7 @@ CODESEG
 
 
 PROC update_score
-    ARG @@scoreptr:dword
+    ;ARG @@scoreptr:dword
     USES eax
 
     ;mov ebx, [@@scoreptr]  ; Load the current value of 'score' into eax
@@ -601,12 +601,12 @@ PROC main
     call update_world 
     call draw_world, offset block_length , offset available_blocks
     mov ah, 2       ; Function to display a character
-    mov dl, score   ; Load the score into DL
+    mov edx, [score]   ; Load the score into DL
     add dl, '0'     ; Convert the score to ASCII
     int 21h         ; Display the character
     
     xor eax, eax
-    call update_score, offset score
+    call update_score ;, offset score
     xor eax, eax
     jmp @@main_loop
 
@@ -675,7 +675,7 @@ DATASEG
     bal_speed_x dd 1
     bal_speed_y dd 1
     
-    score db 0
+    score dd 0
 
     controller_x dd 140
     controller_y dd 180
