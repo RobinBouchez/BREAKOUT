@@ -41,10 +41,10 @@ PROC update_score
     ARG @@scoreptr:dword
     USES eax
 
-    mov ebx, [@@scoreptr]  ; Load the current value of 'score' into eax
-    mov eax, [ebx]
+    ;mov ebx, [@@scoreptr]  ; Load the current value of 'score' into eax
+    mov eax, [score]
     add eax, 1       ; Increment 'score' by 1
-    mov [@@scoreptr], eax  ; Store the updated value back to 'score'
+    mov [score], eax  ; Store the updated value back to 'score'
     xor eax, eax
     
     ret
