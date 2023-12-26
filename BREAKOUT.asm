@@ -206,6 +206,10 @@ PROC draw_world
     cmp ecx, 0
     jne @@outer
 
+    call drawSprite, offset _heart, VMEMADR, [dword ptr edx], [heart_y]
+    ;add ebx, 10
+
+
     call drawSprite, offset _padle, VMEMADR, [controller_x], [controller_y]
     call drawSprite, offset _ball, VMEMADR, [ball_x], [ball_y]
     
@@ -689,6 +693,9 @@ DATASEG
     score dd 0
     lives dd 3
 
+    heart_x dd 20
+    heart_y dd 4
+    
     controller_x dd 140
     controller_y dd 180
     controller_speed dd 4
