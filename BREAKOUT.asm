@@ -206,8 +206,22 @@ PROC draw_world
     cmp ecx, 0
     jne @@outer
 
+    cmp [lives], 3
+    je @@3lives
+    cmp [lives], 2
+    je @@2lives
+    cmp [lives], 1
+    je @@1lives
+    mov edx, [heart_x]
+    
+    @@3lives:
     call drawSprite, offset _heart, VMEMADR, [dword ptr edx], [heart_y]
-    ;add ebx, 10
+    @@2lives:
+    add ebx, 10
+    call drawSprite, offset _heart, VMEMADR, [dword ptr edx], [heart_y]
+    @@1lives:
+    add ebx, 10
+    call drawSprite, offset _heart, VMEMADR, [dword ptr edx], [heart_y]
 
 
     call drawSprite, offset _padle, VMEMADR, [controller_x], [controller_y]
