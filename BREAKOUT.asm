@@ -584,13 +584,12 @@ PROC main
     call DrawBG, offset dataread_start
     jmp @@start
 
-@@go_restart:
     call    set_video_mode, 13h
     call __keyb_installKeyboardHandler
     call ReadFile, offset background_file, offset dataread_bg,DATASIZE
     call ReadFile, offset start_file, offset dataread_start,DATASIZE
     
-@@main_loop:
+    @@main_loop:
     call wait_VBLANK, 3
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
@@ -598,6 +597,8 @@ PROC main
     je @@end_of_loop
     cmp [ball_y], 185
     jge @@lost
+    cmp [score], 65
+    je @@won
     call DrawBG, offset dataread_bg
     call update_world 
     call draw_world, offset block_length , offset available_blocks
@@ -609,6 +610,12 @@ PROC main
     jmp @@main_loop
 
     @@lost:
+    mov eax, [lives]
+    dec eax
+    mov [lives], eax
+    cmp eax, 0
+    ja @@restart_vars
+    
     call DrawBG, offset dataread_start
     mov ah, 09h
     mov edx, offset LostMsg
@@ -626,6 +633,13 @@ PROC main
     call delay
     jmp @@lost_loop
     
+    @@won:
+    call DrawBG, offset dataread_start
+    mov ah, 09h
+    mov edx, offset WonMsg
+    int 21h
+    jmp @@lost_loop
+    
     @@restart_main_loop:
     mov cx, 64
     mov ebx, 0
@@ -633,13 +647,17 @@ PROC main
     mov [available_blocks +  ebx], 1
     add ebx,4
     loop @@fill_loop
+
+    @@restart_vars:
     mov [ball_x], 155
     mov [ball_y], 177
     mov [bal_beweeg_var], 0
     mov [bal_speed_x], 1
     mov [bal_speed_y], 1
     mov [controller_x], 140
-    jmp @@go_restart
+    mov [lives], 3
+    mov [score], 0
+    jmp @@main_loop
 
     @@end_of_loop:
 
@@ -674,6 +692,7 @@ DATASEG
     bal_speed_y dd 1
     
     score dd 0
+    lives dd 3
 
     controller_x dd 140
     controller_y dd 180
@@ -692,7 +711,8 @@ DATASEG
     openErrorMsg db "could not open file", 13, 10, '$'
     readErrorMsg db "could not read data", 13, 10, '$'
     closeErrorMsg db "error during file closing", 13, 10, '$'
-    LostMsg db "You Lost...  Press esc to exit and space to restart!", 13, 10, '$'
+    LostMsg db "You Lost...  Press space to restart!", 13, 10, '$'
+    WonMsg db "You Won...  Press space to restart!", 13, 10, '$'
     scoreMsg db "Score: ", 13, 10, '$'
     LivesMsg db "Lives: ", 13, 10, '$'
 ; -------------------------------------------------------------------
