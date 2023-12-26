@@ -644,7 +644,7 @@ PROC main
     jmp @@lost_loop
     
     @@restart_main_loop:
-    mov cx, 64
+    mov cx, 65
     mov ebx, 0
     mov [score], 0
     mov [lives], 3
@@ -714,8 +714,8 @@ DATASEG
     openErrorMsg db "could not open file", 13, 10, '$'
     readErrorMsg db "could not read data", 13, 10, '$'
     closeErrorMsg db "error during file closing", 13, 10, '$'
-    LostMsg db "You Lost...  Press space to restart!", 13, 10, '$'
-    WonMsg db "You Won...  Press space to restart!", 13, 10, '$'
+    LostMsg db "    You Lost...  Press space to restart!", 13, 10, '$'
+    WonMsg db "   You Won...  Press space to restart!", 13, 10, '$'
     scoreMsg db "Score: ", 13, 10, '$'
     LivesMsg db "Lives: ", 13, 10, '$'
 ; -------------------------------------------------------------------
