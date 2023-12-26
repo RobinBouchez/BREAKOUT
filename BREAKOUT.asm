@@ -3,7 +3,7 @@
 ; 32-bit x86 assembly language
 ; TASM
 ;
-; author:	Lennert De Ville
+; authors:	Lennert De Ville, Robin Bouchez
 ; date:		26/12/2023
 ; program:	Breakout
 ;
@@ -400,8 +400,7 @@ PROC balraakt
     add eax, 4
     add ebx, 4
     loop @@zoek_x
-    sub eax, 4
-
+    
     @@x_gevonden:
     mov ebx, [ball_x]
     cmp ebx, 40
@@ -570,7 +569,7 @@ PROC main
     mov [available_blocks +  ebx], 1
     add ebx,4
     loop @@fill_loop
-    mov [ball_y], 155
+    mov [ball_x], 155
     mov [ball_y], 177
     mov [bal_beweeg_var], 0
     mov [bal_speed_x], 1
