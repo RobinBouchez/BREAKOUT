@@ -442,6 +442,7 @@ PROC balraakt
     jmp @@stop
 
     @@y_gevonden:
+    call update_score ;, offset score
     mov ecx, edx
     sub ecx, 4
     mov ebx, [@@arrayptr2]
@@ -604,9 +605,6 @@ PROC main
     mov edx, [score]   ; Load the score into DL
     add dl, '0'     ; Convert the score to ASCII
     int 21h         ; Display the character
-    
-    xor eax, eax
-    call update_score ;, offset score
     xor eax, eax
     jmp @@main_loop
 
