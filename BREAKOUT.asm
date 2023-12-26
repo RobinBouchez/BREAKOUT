@@ -406,7 +406,7 @@ PROC balraakt
     jl @@skip_sub
     sub eax, 4
     @@skip_sub:
-    sub edx, 3
+    sub edx, 4
     cmp [ball_x], edx
     jge @@pone
     sub edx, 18
@@ -441,7 +441,8 @@ PROC balraakt
     jmp @@stop
 
     @@y_gevonden:
-
+    mov ecx, edx
+    sub ecx, 4
     mov ebx, [@@arrayptr2]
     add ebx, eax
     pop eax
@@ -451,6 +452,8 @@ PROC balraakt
     je @@stop
     mov [dword ptr ebx], 0
     pop eax
+    cmp [ball_y], ecx
+    je @@vanboven
     cmp eax, 1
     je @@rand
     cmp eax, 2
@@ -497,6 +500,14 @@ PROC balraakt
     cmp eax, 0
     je @@case3
     mov [bal_beweeg_var], 0
+    jmp @@stop
+    
+    @@vanboven:
+    mov eax, [bal_beweeg_var]
+    cmp eax, 2
+    je @@case3
+    cmp eax, 3
+    je @@case4
     jmp @@stop
     
     
