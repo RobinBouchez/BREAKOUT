@@ -75,7 +75,7 @@ PROC balraaktcontroller
 	USES eax, ebx, ecx
 	
 	mov eax, [controller_y]
-    sub eax, 2
+    sub eax, 3
 	cmp [ball_y], eax
 	jne @@stop
 	mov eax, [ball_x]
@@ -91,9 +91,9 @@ PROC balraaktcontroller
 	@@gelijk:
     cmp ecx, 4
     jle @@bigleft
-    cmp ecx, 10
+    cmp ecx, 14
     jle @@verhoog
-    cmp ecx, 18
+    cmp ecx, 20
     jle @@recht
     cmp ecx, 28
     jle @@verhoog
@@ -402,16 +402,16 @@ PROC balraakt
     loop @@zoek_x
     
     @@x_gevonden:
-    ;mov ebx, [ball_x]
     cmp [ball_x], 40
-    jle @@skip_sub
+    jl @@skip_sub
     sub eax, 4
     @@skip_sub:
+    sub edx, 4
     cmp [ball_x], edx
-    je @@pone
-    add edx, 17
+    jge @@pone
+    sub edx, 18
     cmp [ball_x], edx
-    jge @@ptwo
+    jle @@ptwo
     push 0
     jmp @@init_y
     @@pone:
@@ -442,19 +442,18 @@ PROC balraakt
 
     @@y_gevonden:
     mov ecx, edx
+    sub ecx, 4
     mov ebx, [@@arrayptr2]
     add ebx, eax
-
     pop eax
     add ebx, eax
     mov edx, [dword ptr ebx]
-    cmp ecx, [ball_y]
-    je @@edgecase
     cmp edx, 0
     je @@stop
     mov [dword ptr ebx], 0
-
     pop eax
+    cmp [ball_y], ecx
+    je @@vanboven
     cmp eax, 1
     je @@rand
     cmp eax, 2
@@ -503,6 +502,13 @@ PROC balraakt
     mov [bal_beweeg_var], 0
     jmp @@stop
     
+    @@vanboven:
+    mov eax, [bal_beweeg_var]
+    cmp eax, 2
+    je @@case3
+    cmp eax, 3
+    je @@case4
+    jmp @@stop
     
     @@stop:
     ret
