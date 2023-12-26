@@ -125,7 +125,7 @@ PROC balraaktcontroller
     jge @@recht
     add eax, 1
     mov [bal_speed_x], eax
-    mov [bal_speed_y], 2
+    ;mov [bal_speed_y], 2
     jmp @@recht
 
     
@@ -402,17 +402,23 @@ PROC balraakt
     loop @@zoek_x
     
     @@x_gevonden:
-    mov ebx, [ball_x]
-    cmp ebx, 40
+    ;mov ebx, [ball_x]
+    cmp [ball_x], 40
     jle @@skip_sub
     sub eax, 4
     @@skip_sub:
-    cmp ebx, edx
+    cmp [ball_x], edx
     je @@pone
+    add edx, 17
+    cmp [ball_x], edx
+    jge @@ptwo
     push 0
     jmp @@init_y
     @@pone:
     push 1
+    jmp @@init_y
+    @@ptwo:
+    push 2
     
     @@init_y:
     push eax
@@ -435,12 +441,15 @@ PROC balraakt
     jmp @@stop
 
     @@y_gevonden:
+    mov ecx, edx
     mov ebx, [@@arrayptr2]
     add ebx, eax
 
     pop eax
     add ebx, eax
     mov edx, [dword ptr ebx]
+    cmp ecx, [ball_y]
+    je @@edgecase
     cmp edx, 0
     je @@stop
     mov [dword ptr ebx], 0
@@ -448,7 +457,10 @@ PROC balraakt
     pop eax
     cmp eax, 1
     je @@rand
+    cmp eax, 2
+    je @@andererand
 
+    @@edgecase:
     mov eax, [bal_beweeg_var]
     cmp eax, 0
     je @@case1
@@ -459,6 +471,14 @@ PROC balraakt
     
     @@case1:
     mov [bal_beweeg_var], 3
+    jmp @@stop
+    
+    @@case4:
+    mov [bal_beweeg_var], 0
+    jmp @@stop
+    
+    @@case3:
+    mov [bal_beweeg_var], 1
     jmp @@stop
     
     @@rand:
@@ -472,9 +492,18 @@ PROC balraakt
     mov [bal_beweeg_var], 0
     jmp @@stop
     
-    @@case3:
-    mov [bal_beweeg_var], 1
-
+    @@andererand:
+    mov eax, [bal_beweeg_var]
+    cmp eax, 1
+    je @@case4
+    cmp eax, 2
+    je @@case1
+    cmp eax, 0
+    je @@case3
+    mov [bal_beweeg_var], 0
+    jmp @@stop
+    
+    
     @@stop:
     ret
 ENDP balraakt
