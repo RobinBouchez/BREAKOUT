@@ -75,7 +75,7 @@ PROC balraaktcontroller
 	USES eax, ebx, ecx
 	
 	mov eax, [controller_y]
-    sub eax, 2
+    sub eax, 3
 	cmp [ball_y], eax
 	jne @@stop
 	mov eax, [ball_x]
@@ -91,9 +91,9 @@ PROC balraaktcontroller
 	@@gelijk:
     cmp ecx, 4
     jle @@bigleft
-    cmp ecx, 10
+    cmp ecx, 14
     jle @@verhoog
-    cmp ecx, 18
+    cmp ecx, 20
     jle @@recht
     cmp ecx, 28
     jle @@verhoog
@@ -509,7 +509,6 @@ PROC balraakt
     cmp eax, 3
     je @@case4
     jmp @@stop
-    
     
     @@stop:
     ret
