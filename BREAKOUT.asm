@@ -490,6 +490,12 @@ PROC update_world
     je @@move_cont_left
     cmp eax, 4dh
     je @@move_cont_right
+    
+    cmp eax, 1Eh
+    je @@move_cont_left
+    cmp eax, 20h
+    je @@move_cont_right
+    jmp @@beweeg_bal
     jmp @@beweeg_bal
     
     @@move_cont_left:
