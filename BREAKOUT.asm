@@ -58,97 +58,7 @@ PROC move_controller
     ret
 ENDP move_controller
 
-PROC balraakt
-    ARG @@arrayptr:dword, @@arrayptr2:dword
-    uses eax, ebx, ecx, edx
 
-    mov eax, [ball_y]
-    cmp eax, 75
-    ja @@stop
-    
-    mov eax, [ball_x] ;;; check of bal binnen bounds is
-    cmp eax, 300
-    ja @@stop 
-    
-    mov ebx, [@@arrayptr]    ; store pointer in ebx
-    mov ecx, [ebx]            ; get length counter in ecx
-    add ebx, 4
-    mov eax, 0
-
-    @@zoek_x:
-    mov edx, [dword ptr ebx]
-    cmp [ball_x], edx
-    jle @@x_gevonden
-    add eax, 4
-    add ebx, 4
-    loop @@zoek_x
-    jmp @@stop
-
-    @@x_gevonden:
-    sub eax, 4
-    cmp ebx, edx
-    je @@pone
-    push 0
-    jmp @@init_y
-    @@pone:
-    push 1
-    
-    @@init_y:
-    push eax
-    mov ebx, [@@arrayptr]    ; store pointer in ebx
-    add ebx, 56 ;; naar einde van y-list gaan
-    mov ecx, 5
-    mov eax, 0
-    
-    @@zoek_y:
-    mov edx, [dword ptr ebx]
-    add edx, 5
-    cmp [ball_y], edx
-    jle @@y_gevonden
-    add ebx, 4
-    add eax, 52
-    loop @@zoek_y
-    jmp @@stop
-
-    @@y_gevonden:
-    mov ebx, [@@arrayptr2]
-    add ebx, eax
-
-    pop eax
-    add ebx, eax
-    mov edx, [dword ptr ebx]
-    cmp edx, 0
-    je @@stop
-    mov [dword ptr ebx], 0
-
-    pop eax
-    cmp eax, 1
-    je @@rand
-
-    mov eax, [bal_beweeg_var]
-    cmp eax, 0
-    je @@case1
-
-    mov [bal_beweeg_var], 2
-    jmp @@stop
-    
-    @@case1:
-    mov [bal_beweeg_var], 3
-    jmp @@stop
-    
-    @@rand:
-    mov eax, [bal_beweeg_var]
-    cmp eax, 0
-    je @@case3
-    mov [bal_beweeg_var], 0
-    jmp @@stop
-    
-    @@case3:
-    mov [bal_beweeg_var], 1
-
-    @@stop:
-    ret
-ENDP balraakt
 
 PROC balraaktcontroller
 	USES eax, ebx, ecx
@@ -408,6 +318,12 @@ PROC change_bal_direction
     ret
 ENDP change_bal_direction
 
+PROC check_block
+    USES eax, ebx
+    mov eax, 1
+    ret
+ENDP check_block
+
 PROC balraaktrand
     USES eax
     
@@ -448,6 +364,110 @@ PROC balraaktrand
     @@stop:
     ret
 ENDP balraaktrand
+
+PROC balraakt
+    ARG @@arrayptr:dword, @@arrayptr2:dword
+    uses eax, ebx, ecx, edx
+
+    mov eax, [ball_y]
+    cmp eax, 75
+    ja @@stop
+    
+    mov eax, [ball_x] ;;; check of bal binnen bounds is
+    cmp eax, 300
+    ja @@stop 
+    
+    mov ebx, [@@arrayptr]    ; store pointer in ebx
+    mov ecx, [ebx]            ; get length counter in ecx
+    add ebx, 4
+    mov eax, 0
+
+    @@zoek_x:
+    mov edx, [dword ptr ebx]
+    cmp [ball_x], edx
+    jle @@x_gevonden
+    add eax, 4
+    add ebx, 4
+    loop @@zoek_x
+    sub eax, 4
+
+    @@x_gevonden:
+    mov ebx, [ball_x]
+    cmp ebx, 40
+    jle @@skip_sub
+    sub eax, 4
+    @@skip_sub:
+    cmp ebx, edx
+    je @@pone
+    push 0
+    jmp @@init_y
+    @@pone:
+    push 1
+    
+    @@init_y:
+    push eax
+    xor eax, eax
+    xor ebx, ebx
+    xor edx, edx
+    mov ebx, [@@arrayptr]    ; store pointer in ebx
+    add ebx, 56 ;; naar einde van y-list gaan
+    mov ecx, 5
+    mov eax, 0
+    
+    @@zoek_y:
+    mov edx, [dword ptr ebx]
+    add edx, 5
+    cmp [ball_y], edx
+    jle @@y_gevonden
+    add ebx, 4
+    add eax, 52
+    loop @@zoek_y
+    jmp @@stop
+
+    @@y_gevonden:
+    mov ebx, [@@arrayptr2]
+    add ebx, eax
+
+    pop eax
+    add ebx, eax
+    mov edx, [dword ptr ebx]
+    cmp edx, 0
+    je @@stop
+    mov [dword ptr ebx], 0
+
+    pop eax
+    cmp eax, 1
+    je @@rand
+
+    mov eax, [bal_beweeg_var]
+    cmp eax, 0
+    je @@case1
+    
+    @@case0:
+    mov [bal_beweeg_var], 2
+    jmp @@stop
+    
+    @@case1:
+    mov [bal_beweeg_var], 3
+    jmp @@stop
+    
+    @@rand:
+    mov eax, [bal_beweeg_var]
+    cmp eax, 0
+    je @@case3
+    cmp eax, 2
+    je @@case1
+    cmp eax, 3
+    je @@case0
+    mov [bal_beweeg_var], 0
+    jmp @@stop
+    
+    @@case3:
+    mov [bal_beweeg_var], 1
+
+    @@stop:
+    ret
+ENDP balraakt
     
 
 PROC update_world
