@@ -186,6 +186,12 @@ PROC balraaktcontroller
 
 
     @@recht:
+    mov eax, [bal_speed_x]
+    cmp eax, 1
+    jle @@sla_over
+    sub eax, 1
+    mov [bal_speed_x], eax
+    @@sla_over:
 	cmp [bal_beweeg_var], 3
     je @@normal
     mov [bal_beweeg_var], 1
