@@ -529,15 +529,29 @@ PROC main
     
     push ds
     pop  es
-    @@go_restart:
     
     call    set_video_mode, 13h
     call __keyb_installKeyboardHandler
     call ReadFile, offset background_file, offset dataread_bg,DATASIZE
-     call ReadFile, offset start_file, offset dataread_start,DATASIZE
-        mov ah, 09h
-    mov edx, offset scoremsg
-    int 21h
+    call ReadFile, offset start_file, offset dataread_start,DATASIZE
+    
+@@start:
+    call delay
+    call wait_VBLANK, 3
+    call process_user_input
+    mov     al, [__keyb_rawScanCode]; last pressed key
+    cmp     al, 01h
+    je @@end_of_loop
+    cmp     al, 39h
+    je @@main_loop
+    call DrawBG, offset dataread_start
+    jmp @@start
+
+@@go_restart:
+    call    set_video_mode, 13h
+    call __keyb_installKeyboardHandler
+    call ReadFile, offset background_file, offset dataread_bg,DATASIZE
+    call ReadFile, offset start_file, offset dataread_start,DATASIZE
     
 @@main_loop:
     call wait_VBLANK, 3
