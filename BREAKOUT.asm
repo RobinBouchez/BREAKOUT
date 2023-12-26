@@ -540,15 +540,16 @@ PROC main
     int 21h
 
     @@lost_loop:
-    call delay
     call wait_VBLANK, 3
     call process_user_input
     mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 01h
     je @@end_of_loop
+    call process_user_input
+    mov     al, [__keyb_rawScanCode]; last pressed key
     cmp     al, 39h
     je @@restart_main_loop
-    call delay
+    ;call delay
     jmp @@lost_loop
     
     @@restart_main_loop:
